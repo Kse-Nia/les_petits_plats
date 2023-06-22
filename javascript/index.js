@@ -1,7 +1,37 @@
 import { recipes } from "../data/recipes.js";
+import {
+  getIngredients,
+  getAppliances,
+  getUtensils,
+  createFilterMenu,
+} from "./filterTags.js";
 
-console.log(recipes);
+// Get and display all filters
+const recipesContainer = document.querySelector("#recipes");
+const filterContainer = document.querySelector(".filters");
+const searchForm = document.querySelector("#searchbar");
 
+const uniqueIngredients = getIngredients(recipes);
+const uniqueAppliances = getAppliances(recipes);
+const uniqueUstensils = getUtensils(recipes);
+
+createFilterMenu("Ingredients", uniqueIngredients);
+createFilterMenu("Appliances", uniqueAppliances);
+createFilterMenu("Ustensils", uniqueUstensils);
+
+console.log(filterContainer);
+
+// Searchbar
+searchForm.addEventListener("input", (e) => {
+  const searchInput = e.target.value;
+  if (searchInput.length >= 3) {
+    renderRecipes(searchInput);
+  } else if (searchInput.length === 0) {
+    renderRecipes();
+  }
+});
+
+// Truncate description
 function truncateDescription(text, maxLength) {
   let truncated = text;
   if (truncated.length > maxLength) {
@@ -10,17 +40,44 @@ function truncateDescription(text, maxLength) {
   return truncated;
 }
 
-function renderRecipes() {
-  const recipesContainer = document.querySelector("#recipes");
-
-  console.log(recipesContainer);
-
-  recipesContainer.classList.add("row");
+async function renderRecipes(searchTerm = "") {
   let contentHtml = "";
-  recipes.map((recipe) => {
+  for (let i = 0; i < recipes.length; i++) {
+    let recipe = recipes[i];
+
+    let lowerCaseSearchTerm = searchTerm.toLowerCase();
+    let isTermInName = recipe.name.toLowerCase().includes(lowerCaseSearchTerm);
+    let isTermInDescription = recipe.description
+      .toLowerCase()
+      .includes(lowerCaseSearchTerm);
+
+    let isTermInIngredients = false;
+    for (let ingredient of recipe.ingredients) {
+      if (ingredient.ingredient.toLowerCase().includes(lowerCaseSearchTerm)) {
+        isTermInIngredients = true;
+        break;
+      }
+    }
+    let isTermInUstensils = false;
+    for (let utensil of recipe.ustensils) {
+      if (utensil.toLowerCase().includes(lowerCaseSearchTerm)) {
+        isTermInUstensils = true;
+        break;
+      }
+    }
+    if (
+      searchTerm.length >= 3 &&
+      !isTermInName &&
+      !isTermInDescription &&
+      !isTermInIngredients &&
+      !isTermInUstensils
+    ) {
+      continue;
+    }
+
     let description = truncateDescription(recipe.description, 200);
     contentHtml += `
-    <div class="col-12 col-sm-6 col-lg-4 p-2">
+    <div class="col-12 col-sm-6 col-lg-4 p-1">
     <div class="card rounded h-100">
       <div class="container-img">
       <img src="assets/photos/Recette${
@@ -55,14 +112,25 @@ function renderRecipes() {
         </div>
         <div class="container-ingredients d-flex flex-row">
           <div class="col">
-            ${recipe.ingredients
-              .map((ingredient) => {
+          ${recipe.ingredients
+            .map((ingredient) => {
+              if (ingredient.unit) {
                 return `
-            <span class="card-text mb-0">${ingredient.ingredient}</span> :
-            <span class="card-text mb-0">${ingredient.quantity}</span><br />
-            `;
-              })
-              .join("")} ${recipe.ustensils
+                  <span class="card-text mb-0 fw-bold">${
+                    ingredient.ingredient
+                  }</span> :
+                  <span class="card-text mb-0">${
+                    ingredient.quantity
+                  }</span> <span> ${ingredient.unit.slice(0, 2)} <br />
+                  `;
+              } else {
+                return `
+                  <span class="card-text mb-0 fw-bold">${ingredient.ingredient}</span> :
+                  <span class="card-text mb-0">${ingredient.quantity}<br />
+                  `;
+              }
+            })
+            .join("")} ${recipe.ustensils.join("")} ${recipe.ustensils
       .map((ustensil) => {
         return `
             <p class="card-text mb-0">${ustensil}</p>
@@ -78,7 +146,7 @@ function renderRecipes() {
     </div>
   </div>  
   `;
-  });
+  }
   recipesContainer.innerHTML = contentHtml;
 }
 

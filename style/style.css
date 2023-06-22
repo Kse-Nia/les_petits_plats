@@ -4,8 +4,8 @@
   box-sizing: border-box;
   text-decoration: none;
   list-style: none;
-  /*   border-color: red;
-  border: 1px solid red; */
+  border-color: red;
+  border: 1px solid red;
 }
 
 h1 {
@@ -85,4 +85,40 @@ form.nosubmit {
   width: 100%;
   max-height: 26vh;
   object-fit: cover;
+}
+
+/* Tags */
+.category_title-ingredients {
+  background-color: #3282f7;
+  color: #e7e7e7;
+  margin: 5%;
+}
+
+.category_title-ingredients:hover {
+  background-color: #3282f7;
+}
+
+.category_title-appliances {
+  background-color: #68d9a4;
+  color: #e7e7e7;
+  margin: 5%;
+}
+
+.category_title-appliances:hover {
+  background-color: #68d9a4;
+}
+
+.category_title-ustensils {
+  background-color: #ed6454;
+  color: #e7e7e7;
+  margin: 5%;
+}
+
+.category_title-ustensils:hover {
+  background-color: #ed6454;
+}
+
+.item-list {
+  background-color: #3282f7;
+  color: #e7e7e7;
 }
