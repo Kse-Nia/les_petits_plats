@@ -50,23 +50,30 @@ console.log(getIngredients(recipes));
 console.log(getAppliances(recipes));
 console.log(getUtensils(recipes));
 
-// Create filter menu
+// Create filter menus
 function createFilterMenu(categoryName, items) {
   const filterContainer = document.querySelector(".filters");
   const categoryWrapper = document.createElement("div");
-  categoryWrapper.classList.add("wrapper-category");
+  categoryWrapper.classList.add(
+    "wrapper-category",
+    "border",
+    "p-2",
+    "m-2",
+    "bg-white"
+  );
 
-  //const categoryTitle = document.createElement("button");
   const categoryTitle = document.createElement("div");
   categoryTitle.textContent = categoryName;
-
-  const categoryClass = categoryName.toLowerCase().split(" ").join("-");
-  categoryTitle.classList.add(`category_title-${categoryClass}`, "m-1");
+  categoryTitle.classList.add(
+    `category_title-${categoryName.toLowerCase().split(" ").join("-")}`,
+    "m-1"
+  );
 
   categoryWrapper.appendChild(categoryTitle);
 
   const searchAndItemList = document.createElement("div");
   searchAndItemList.style.display = "none";
+  searchAndItemList.classList.add("dropdown-content");
   categoryWrapper.appendChild(searchAndItemList);
 
   const searchInput = document.createElement("input");
@@ -84,16 +91,22 @@ function createFilterMenu(categoryName, items) {
     const listItem = document.createElement("li");
     listItem.textContent = item;
     listItem.classList.add("tag");
+    listItem.addEventListener("click", function () {
+      this.classList.toggle("selected");
+    });
     itemList.appendChild(listItem);
   });
 
-  // Hide/Show eventListener
   categoryTitle.addEventListener("click", () => {
-    const isHidden = searchAndItemList.style.display === "none";
-    searchAndItemList.style.display = isHidden ? "block" : "none";
+    document.querySelectorAll(".dropdown-content").forEach((dropdown) => {
+      if (dropdown !== searchAndItemList) {
+        dropdown.style.display = "none";
+      }
+    });
+    searchAndItemList.style.display =
+      searchAndItemList.style.display === "none" ? "block" : "none";
   });
 
-  // Search functionality
   searchInput.addEventListener("keyup", function () {
     const searchValue = searchInput.value.toLowerCase();
     const listItems = itemList.getElementsByTagName("li");

@@ -4,121 +4,77 @@
   box-sizing: border-box;
   text-decoration: none;
   list-style: none;
-  border-color: red;
-  border: 1px solid red;
+  /*  border-color: red;
+  border: 1px solid red; */
+}
+
+body {
+  font-family: Anton, sans-serif;
+  background-color: #ededed;
+}
+
+header {
+  background-image: url(../assets/header.png);
+  background-size: cover;
+  height: 80vh;
+  width: 100vw;
+  min-width: 100%;
+  margin: 0;
 }
 
 h1 {
-  color: #d04f4f;
+  width: 80%;
+  font-weight: 800;
+  color: #ffd15b;
+  font-size: 2.75rem;
+  font-family: Anton;
 }
 
-.container_search {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: stretch;
-}
-form {
-  min-height: 70px;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  padding: 2px;
-  border: 1px solid currentColor;
-  border-radius: 5px;
-  background: #e7e7e7;
-  margin: 0 5% 0;
+.form {
+  width: 80vw;
+  height: 5rem;
+  border-radius: 11px;
 }
 
-input[type="search"] {
-  width: 100%;
-  background: #e7e7e7;
-  border: none;
-  margin: 0;
-  padding: 7px 8px;
-  font-size: 14px;
-  color: inherit;
-  border: 1px solid transparent;
-  border-radius: inherit;
-  opacity: 0.5;
+.searchbar {
+  color: #7a7a7a;
+  font-size: 1rem;
 }
 
-input[type="search"]::placeholder {
-  min-width: 100%;
-  color: #000000;
-  font-size: 18px;
-  background: #e7e7e7;
+.search_button svg path {
+  fill: #ffffff;
 }
 
-button[type="submit"] {
-  width: 32px;
-  height: 100%;
-  max-width: 32px;
-  max-height: 32px;
-  border: none;
-  margin: 50% 10% 50% 0;
-  overflow: hidden;
-  color: #000000;
-  border-radius: inherit;
-  cursor: pointer;
+input:focus + .search_button {
+  background-color: #ffd15b;
+}
+input:focus + .search_button svg path {
+  background-color: #ffd15b;
 }
 
-button[type="submit"]:hover {
-  opacity: 1;
-}
-
-button[type="submit"]:focus,
-input[type="search"]:focus {
-  border-color: #e7e7e7;
-  outline: none;
-}
-
-form.nosubmit {
-  border: none;
-  padding: 0;
-}
-
-.card {
-  background-color: #e7e7e7;
+.container-img {
+  height: 40vh;
 }
 .card-img {
   width: 100%;
-  max-height: 26vh;
+  height: 100%;
   object-fit: cover;
+  border-radius: 0;
 }
 
-/* Tags */
-.category_title-ingredients {
-  background-color: #3282f7;
-  color: #e7e7e7;
-  margin: 5%;
+.container-img {
+  position: relative;
 }
 
-.category_title-ingredients:hover {
-  background-color: #3282f7;
+.time-overlay {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #ffd15b;
+  padding: 10px 20px;
 }
 
-.category_title-appliances {
-  background-color: #68d9a4;
-  color: #e7e7e7;
-  margin: 5%;
-}
-
-.category_title-appliances:hover {
-  background-color: #68d9a4;
-}
-
-.category_title-ustensils {
-  background-color: #ed6454;
-  color: #e7e7e7;
-  margin: 5%;
-}
-
-.category_title-ustensils:hover {
-  background-color: #ed6454;
-}
-
-.item-list {
-  background-color: #3282f7;
-  color: #e7e7e7;
+.card-text-quantity,
+.recette {
+  color: #7a7a7a;
 }
