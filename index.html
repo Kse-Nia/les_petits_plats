@@ -54,9 +54,15 @@
     </header>
 
     <main>
-      <section class="filters d-flex align-items-center">
-        <h4 class="me-auto">1500 recettes</h4>
+      <section
+        class="d-flex flex-row-reverse align-items-center justify-content-between"
+      >
+        <div class="filters-container d-flex">
+          <div class="selected-tags-container"></div>
+        </div>
+        <h4 class="m-0">1500 recettes</h4>
       </section>
+      <section class="selected-filters"></section>
       <section id="recipes" class="row m-4"></section>
     </main>
     <script

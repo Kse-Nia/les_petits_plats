@@ -47,6 +47,8 @@ h1 {
 
 input:focus + .search_button {
   background-color: #ffd15b;
+  color: black;
+  border: none;
 }
 input:focus + .search_button svg path {
   background-color: #ffd15b;
@@ -77,4 +79,11 @@ input:focus + .search_button svg path {
 .card-text-quantity,
 .recette {
   color: #7a7a7a;
+}
+
+.dropdown-content {
+  background-color: #ffffff;
+  position: absolute;
+  z-index: 1000; /*  Drop down filter menu above all content */
+  display: none;
 }
