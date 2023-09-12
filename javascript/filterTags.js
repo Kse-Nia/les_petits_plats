@@ -1,13 +1,11 @@
 import { recipes } from "../data/recipes.js";
+import { runSearch } from "./search.js";
 
-// Get all ingredients from recipes and remove repetition
+// Get all ingredients, appliances, and utensils
 function getIngredients(recipes) {
   const ingredients = [];
-  // Loop through recipes
   for (let i = 0; i < recipes.length; i++) {
-    // Loop through ingredients
     for (let j = 0; j < recipes[i].ingredients.length; j++) {
-      // Check repetition
       if (!ingredients.includes(recipes[i].ingredients[j].ingredient)) {
         ingredients.push(recipes[i].ingredients[j].ingredient);
       }
@@ -17,7 +15,6 @@ function getIngredients(recipes) {
   return ingredients;
 }
 
-// Get all appliances
 function getAppliances(recipes) {
   const appliances = [];
   recipes.forEach((recipe) => {
@@ -25,11 +22,9 @@ function getAppliances(recipes) {
       appliances.push(recipe.appliance);
     }
   });
-
   return appliances;
 }
 
-// Get all utensils
 function getUtensils(recipes) {
   const utensils = [];
   recipes.forEach((recipe) => {
@@ -42,21 +37,21 @@ function getUtensils(recipes) {
   return utensils;
 }
 
-getAppliances(recipes);
-getIngredients(recipes);
-getUtensils(recipes);
-
-console.log(getIngredients(recipes));
-console.log(getAppliances(recipes));
-console.log(getUtensils(recipes));
-
-// Create filter menus
+// DOM filters
 function createFilterMenu(categoryName, items) {
-  const filterContainer = document.querySelector(".filters");
+  const filterContainer = document.querySelector(".filters-container");
+  const selectedTagsContainer = document.querySelector(
+    ".selected-tags-container"
+  );
+
   const categoryWrapper = document.createElement("div");
+
   categoryWrapper.classList.add(
     "wrapper-category",
+    "flex",
+    "direction-column",
     "border",
+    "rounded",
     "p-2",
     "m-2",
     "bg-white"
@@ -71,54 +66,71 @@ function createFilterMenu(categoryName, items) {
 
   categoryWrapper.appendChild(categoryTitle);
 
-  const searchAndItemList = document.createElement("div");
-  searchAndItemList.style.display = "none";
-  searchAndItemList.classList.add("dropdown-content");
-  categoryWrapper.appendChild(searchAndItemList);
+  const itemsList = document.createElement("div");
+  itemsList.style.display = "none";
+  itemsList.classList.add("dropdown-content", "flex", "direction-column");
+  categoryWrapper.appendChild(itemsList);
 
+  // Search input
   const searchInput = document.createElement("input");
   searchInput.setAttribute("type", "text");
-  searchInput.setAttribute("placeholder", `Rechercher ${categoryName}`);
   searchInput.classList.add("search-input");
-  searchAndItemList.appendChild(searchInput);
+  itemsList.appendChild(searchInput);
 
-  const itemList = document.createElement("ul");
+  // Items list
+  const itemList = document.createElement("div");
   itemList.classList.add("item-list");
   itemList.style.backgroundColor = categoryTitle.style.backgroundColor;
-  searchAndItemList.appendChild(itemList);
+  itemsList.appendChild(itemList);
 
   items.forEach((item) => {
-    const listItem = document.createElement("li");
-    listItem.textContent = item;
+    const listItem = document.createElement("div");
+
+    const title = document.createElement("p");
+    title.textContent = item;
+    listItem.appendChild(title);
+
     listItem.classList.add("tag");
     listItem.addEventListener("click", function () {
       this.classList.toggle("selected");
+      const selectedTags = Array.from(
+        itemList.querySelectorAll(".selected")
+      ).map((selectedTag) => selectedTag.textContent);
+      const searchTerm = selectedTags.join(" ");
+      const searchResults = runSearch(recipes, searchTerm);
+      renderRecipes(searchResults);
     });
     itemList.appendChild(listItem);
   });
 
-  categoryTitle.addEventListener("click", () => {
-    document.querySelectorAll(".dropdown-content").forEach((dropdown) => {
-      if (dropdown !== searchAndItemList) {
-        dropdown.style.display = "none";
-      }
-    });
-    searchAndItemList.style.display =
-      searchAndItemList.style.display === "none" ? "block" : "none";
-  });
-
-  searchInput.addEventListener("keyup", function () {
+  // Event listener for search input in tags
+  searchInput.addEventListener("input", () => {
     const searchValue = searchInput.value.toLowerCase();
-    const listItems = itemList.getElementsByTagName("li");
+    const listItems = itemList.getElementsByClassName("tag");
 
-    for (let i = 0; i < listItems.length; i++) {
-      const textValue = listItems[i].textContent || listItems[i].innerText;
-      if (textValue.toLowerCase().indexOf(searchValue) > -1) {
-        listItems[i].style.display = "";
-      } else {
-        listItems[i].style.display = "none";
+    // Search with at least 3 letters
+    if (searchValue.length >= 3) {
+      for (let i = 0; i < listItems.length; i++) {
+        const textValue = listItems[i].textContent.toLowerCase();
+        if (textValue.includes(searchValue)) {
+          listItems[i].style.display = "block";
+        } else {
+          listItems[i].style.display = "none";
+        }
+      }
+    } else {
+      for (let i = 0; i < listItems.length; i++) {
+        listItems[i].style.display = "block";
       }
     }
+  });
+
+  // Selecting filter tags
+
+  // Open filter on click
+  categoryTitle.addEventListener("click", () => {
+    itemsList.style.display =
+      itemsList.style.display === "none" ? "block" : "none";
   });
 
   filterContainer.appendChild(categoryWrapper);

@@ -1,4 +1,5 @@
 import { recipes } from "../data/recipes.js";
+import { runSearch } from "./search.js";
 import {
   getIngredients,
   getAppliances,
@@ -16,22 +17,24 @@ const uniqueAppliances = getAppliances(recipes);
 const uniqueUstensils = getUtensils(recipes);
 
 createFilterMenu("Ingredients", uniqueIngredients);
-createFilterMenu("Appliances", uniqueAppliances);
-createFilterMenu("Ustensils", uniqueUstensils);
+createFilterMenu("Appareils", uniqueAppliances);
+createFilterMenu("Ustensiles", uniqueUstensils);
 
 console.log(filterContainer);
 
 // Searchbar
 searchForm.addEventListener("input", (e) => {
   const searchInput = e.target.value;
+  // Search at least 3 letters
   if (searchInput.length >= 3) {
-    renderRecipes(searchInput);
+    const searchResults = runSearch(recipes, searchInput);
+    renderRecipes(searchResults);
   } else if (searchInput.length === 0) {
     renderRecipes();
   }
 });
 
-// Truncate description
+// Truncate description length
 function truncateDescription(text, maxLength) {
   let truncated = text;
   if (truncated.length > maxLength) {
