@@ -43,8 +43,8 @@ function createFilterMenu(categoryName, items) {
   const selectedTagsContainer = document.querySelector(
     ".selected-tags-container"
   );
-
   const categoryWrapper = document.createElement("div");
+  const tagIcon = document.createElement("i");
 
   categoryWrapper.classList.add(
     "wrapper-category",
@@ -58,11 +58,19 @@ function createFilterMenu(categoryName, items) {
   );
 
   const categoryTitle = document.createElement("div");
-  categoryTitle.textContent = categoryName;
   categoryTitle.classList.add(
     `category_title-${categoryName.toLowerCase().split(" ").join("-")}`,
     "m-1"
   );
+  tagIcon.classList.add(
+    "bi",
+    "bi-chevron-compact-down",
+    "custom-margin",
+    "bi-2x"
+  );
+
+  categoryTitle.textContent = categoryName;
+  categoryTitle.appendChild(tagIcon);
 
   categoryWrapper.appendChild(categoryTitle);
 
@@ -129,11 +137,20 @@ function createFilterMenu(categoryName, items) {
 
   // Open filter on click
   categoryTitle.addEventListener("click", () => {
+    tagIcon.classList.add("rotate-icon");
     itemsList.style.display =
       itemsList.style.display === "none" ? "block" : "none";
+    /*  tagIcon.style.transform =
+      tagIcon.style.transform === "rotate(180deg)"
+        ? "rotate(0deg)"
+        : "rotate(180deg)"; */
+    console.log("Rotate added");
+    console.log(tagIcon);
   });
 
+  categoryWrapper.appendChild(itemsList);
   filterContainer.appendChild(categoryWrapper);
+  // tagIcon.appendChild(categoryWrapper);
 }
 
 export { getIngredients, getAppliances, getUtensils, createFilterMenu };

@@ -87,3 +87,20 @@ input:focus + .search_button svg path {
   z-index: 1000; /*  Drop down filter menu above all content */
   display: none;
 }
+
+.custom-margin {
+  margin-left: 2rem;
+}
+
+.wrapper-category {
+  position: relative;
+  width: 195px;
+}
+.item-list {
+  background-color: #ffffff;
+  width: 195px;
+}
+
+.rotate-icon {
+  transform: rotate(180deg) !important;
+}
