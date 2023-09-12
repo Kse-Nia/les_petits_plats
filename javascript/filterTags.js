@@ -1,6 +1,8 @@
 import { recipes } from "../data/recipes.js";
 import { runSearch } from "./search.js";
 
+console.log(recipes);
+
 // Get all ingredients, appliances, and utensils
 function getIngredients(recipes) {
   const ingredients = [];
@@ -16,6 +18,43 @@ function getIngredients(recipes) {
 }
 
 function getAppliances(recipes) {
+  const appliances = [];
+  for (let i = 0; i < recipes.length; i++) {
+    if (!appliances.includes(recipes[i].appliance)) {
+      appliances.push(recipes[i].appliance);
+    }
+  }
+  appliances.sort();
+  return appliances;
+}
+
+function getUtensils(recipes) {
+  const utensils = [];
+  for (let i = 0; i < recipes.length; i++) {
+    for (let j = 0; j < recipes[i].ustensils.length; j++) {
+      if (!utensils.includes(recipes[i].ustensils[j])) {
+        utensils.push(recipes[i].ustensils[j]);
+      }
+    }
+  }
+  utensils.sort();
+  return utensils;
+}
+
+/* function getIngredients(recipes) {
+  const ingredients = [];
+  for (let i = 0; i < recipes.length; i++) {
+    for (let j = 0; j < recipes[i].ingredients.length; j++) {
+      if (!ingredients.includes(recipes[i].ingredients[j].ingredient)) {
+        ingredients.push(recipes[i].ingredients[j].ingredient);
+      }
+    }
+  }
+  ingredients.sort();
+  return ingredients;
+}
+ */
+/* function getAppliances(recipes) {
   const appliances = [];
   recipes.forEach((recipe) => {
     if (!appliances.includes(recipe.appliance)) {
@@ -36,6 +75,8 @@ function getUtensils(recipes) {
   });
   return utensils;
 }
+
+*/
 
 // DOM filters
 function createFilterMenu(categoryName, items) {
