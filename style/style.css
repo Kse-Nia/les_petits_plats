@@ -1,27 +1,33 @@
-* {
+*,
+header {
   margin: 0;
+}
+.time-overlay,
+input:focus + .search_button svg path {
+  background-color: #ffd15b;
+}
+.card-text-quantity,
+.recette,
+.searchbar {
+  color: #7a7a7a;
+}
+* {
   padding: 0;
   box-sizing: border-box;
   text-decoration: none;
   list-style: none;
-  /*  border-color: red;
-  border: 1px solid red; */
 }
-
 body {
   font-family: Anton, sans-serif;
   background-color: #ededed;
 }
-
 header {
   background-image: url(../assets/header.png);
   background-size: cover;
   height: 80vh;
   width: 100vw;
   min-width: 100%;
-  margin: 0;
 }
-
 h1 {
   width: 80%;
   font-weight: 800;
@@ -29,33 +35,25 @@ h1 {
   font-size: 2.75rem;
   font-family: Anton;
 }
-
 .form {
   width: 80vw;
   height: 5rem;
   border-radius: 11px;
 }
-
 .searchbar {
-  color: #7a7a7a;
   font-size: 1rem;
 }
-
 .search_button svg path {
   fill: #ffffff;
 }
-
 input:focus + .search_button {
   background-color: #ffd15b;
-  color: black;
+  color: #000;
   border: none;
 }
-input:focus + .search_button svg path {
-  background-color: #ffd15b;
-}
-
 .container-img {
   height: 40vh;
+  position: relative;
 }
 .card-img {
   width: 100%;
@@ -63,44 +61,46 @@ input:focus + .search_button svg path {
   object-fit: cover;
   border-radius: 0;
 }
-
-.container-img {
-  position: relative;
-}
-
 .time-overlay {
   position: absolute;
   top: 10px;
   right: 10px;
-  background-color: #ffd15b;
   padding: 10px 20px;
 }
-
-.card-text-quantity,
-.recette {
-  color: #7a7a7a;
-}
-
 .dropdown-content {
-  background-color: #ffffff;
+  background-color: #fff;
   position: absolute;
-  z-index: 1000; /*  Drop down filter menu above all content */
+  z-index: 1000;
   display: none;
 }
-
 .custom-margin {
   margin-left: 2rem;
 }
-
 .wrapper-category {
   position: relative;
   width: 195px;
 }
 .item-list {
-  background-color: #ffffff;
+  background-color: #fff;
   width: 195px;
 }
-
 .rotate-icon {
-  transform: rotate(180deg) !important;
+  transform: rotate(180deg);
+  transition: transform 0.5s ease-in-out;
+}
+.selected-tag-button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-width: 205px;
+  min-height: 50px;
+  padding: 0 10px;
+  margin: 10px 0;
+  background-color: #ffd15b;
+  border-radius: 10px;
+  border: none;
+}
+.tag_close-icon {
+  font-size: 1.5rem;
+  font-weight: 700;
 }
