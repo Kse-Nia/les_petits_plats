@@ -168,38 +168,6 @@ function createFilterMenu(categoryName, items, renderRecipes) {
     }
   });
 
-  // Selecting filter tags
-  function createSelectedTagButton(tagName, container) {
-    const tagButton = document.createElement("button");
-
-    // Create a span element to hold the tag name
-    const span = document.createElement("span");
-    span.textContent = tagName;
-    tagButton.appendChild(span);
-
-    // Add remove icon
-    const icon = document.createElement("i");
-    icon.classList.add("bi", "bi-x", "tag_close-icon");
-    tagButton.appendChild(icon);
-
-    tagButton.classList.add("selected-tag-button");
-
-    // Event listener for click on icon
-    icon.addEventListener("click", () => {
-      container.removeChild(tagButton);
-    });
-
-    container.appendChild(tagButton);
-  }
-
-  function removeSelectedTagButton(tagName, container) {
-    const existingButtons = container.querySelectorAll(".selected-tag-button");
-    existingButtons.forEach((button) => {
-      if (button.textContent === tagName) {
-        container.removeChild(button);
-      }
-    });
-  }
   // Open Filter on click
   categoryTitle.addEventListener("click", () => {
     tagIcon.classList.toggle("rotate-icon"); // add rotate class
@@ -216,6 +184,39 @@ function createFilterMenu(categoryName, items, renderRecipes) {
   filterContainer.appendChild(categoryWrapper);
 }
 
+// Selecting filter tags
+function createSelectedTagButton(tagName, container) {
+  const tagButton = document.createElement("button");
+
+  // Create a span element to hold the tag name
+  const span = document.createElement("span");
+  span.textContent = tagName;
+  tagButton.appendChild(span);
+
+  // Add remove icon
+  const icon = document.createElement("i");
+  icon.classList.add("bi", "bi-x", "tag_close-icon");
+  tagButton.appendChild(icon);
+
+  tagButton.classList.add("selected-tag-button");
+
+  // Event listener for click on icon
+  icon.addEventListener("click", () => {
+    container.removeChild(tagButton);
+  });
+
+  container.appendChild(tagButton);
+}
+
+// Remove tag button
+function removeSelectedTagButton(tagName, container) {
+  const existingButtons = container.querySelectorAll(".selected-tag-button");
+  existingButtons.forEach((button) => {
+    if (button.textContent === tagName) {
+      container.removeChild(button);
+    }
+  });
+}
 // Search
 function runSearch(recipes, selectedTags) {
   return recipes.filter((recipe) => {

@@ -1,132 +1,189 @@
 import { recipes } from "../data/recipes.js";
 import {
-  getIngredients,
   getAppliances,
+  getIngredients,
   getUtensils,
   createFilterMenu,
-} from "./filterTags.js";
+} from "./tags.js";
 
-// Get and display all filters
-const recipesContainer = document.querySelector("#recipes");
-const filterContainer = document.querySelector(".filters");
-const searchForm = document.querySelector("#searchbar");
+console.log(recipes);
 
+function createCard(recipes) {
+  const recipesContainer = document.querySelector("#recipes");
+  const folderPictures = "assets/photos/";
+  const filterContainer = document.querySelector(".filters");
+  const searchForm = document.querySelector("#searchbar");
+
+  for (let i = 0; i < recipes.length; i++) {
+    const card = document.createElement("div");
+    card.classList.add("col-12", "col-sm-6", "col-lg-4", "p-3");
+
+    const cardInner = document.createElement("div");
+    cardInner.classList.add("card", "rounded", "h-100");
+    card.appendChild(cardInner);
+
+    // Image
+    const imageContainer = document.createElement("div");
+    imageContainer.classList.add("container-img", "position-relative");
+    cardInner.appendChild(imageContainer);
+
+    const image = document.createElement("img");
+    image.src = folderPictures + recipes[i].image;
+    image.classList.add("card-img", "rounded-top");
+    image.alt = "recipe photo";
+    imageContainer.appendChild(image);
+
+    // Time overlay
+    const timeOverlay = document.createElement("div");
+    timeOverlay.classList.add(
+      "time-overlay",
+      "d-flex",
+      "align-items-center",
+      "justify-content-center",
+      "rounded-pill"
+    );
+    const time = document.createElement("p");
+    time.classList.add("m-0");
+    time.textContent = `${recipes[i].time} min`;
+    timeOverlay.appendChild(time);
+    imageContainer.appendChild(timeOverlay);
+
+    // Card body
+    const cardBody = document.createElement("div");
+    cardBody.classList.add("card-body", "m-2");
+    cardInner.appendChild(cardBody);
+
+    // Title
+    const title = document.createElement("h2");
+    title.classList.add("card-title", "fs-4", "fw-bolder");
+    title.textContent = recipes[i].name;
+    cardBody.appendChild(title);
+
+    // Recipe label
+    const recetteLabel = document.createElement("p");
+
+    recetteLabel.classList.add("recette");
+    recetteLabel.textContent = "RECETTE";
+    cardBody.appendChild(recetteLabel);
+
+    // Description
+    const description = document.createElement("p");
+    description.classList.add("card-text", "text-wrap");
+    description.textContent = recipes[i].description;
+    cardBody.appendChild(description);
+
+    // Truncate description if too long
+    function truncateDescription(text, maxLength) {
+      return text.length > maxLength ? text.substr(0, maxLength) + "..." : text;
+    }
+    description.textContent = truncateDescription(description.textContent, 150);
+
+    // Ingredients
+    const ingredientsContainer = document.createElement("div");
+    ingredientsContainer.classList.add(
+      "container-ingredients",
+      "d-flex",
+      "flex-row",
+      "flex-wrap"
+    );
+    cardBody.appendChild(ingredientsContainer);
+
+    for (let j = 0; j < recipes[i].ingredients.length; j++) {
+      /*    console.log(recipes[i].ingredients[j]); */
+      const ingredient = recipes[i].ingredients[j]; // Get all ingredients
+      const ingredientDiv = document.createElement("div"); // Ingredient div container
+      ingredientDiv.classList.add("col-6");
+      ingredientsContainer.appendChild(ingredientDiv);
+
+      const ingredientName = document.createElement("span");
+      ingredientName.classList.add("card-text", "mb-0", "fw-bolder");
+      ingredientName.textContent = ingredient.ingredient;
+      ingredientDiv.appendChild(ingredientName);
+
+      const ingredientDetails = document.createElement("span");
+      ingredientDetails.classList.add("card-text-quantity", "mb-0");
+      let text = ingredient.quantity ? `: ${ingredient.quantity}` : "";
+      text += ingredient.unit ? ` ${ingredient.unit.slice(0, 2)}` : "";
+      ingredientDetails.textContent = text;
+      ingredientDiv.appendChild(ingredientDetails);
+    }
+
+    recipesContainer.appendChild(card);
+  }
+}
+
+createCard(recipes);
+
+// Search and rendering
+
+// Code pobject array type
+/* function filterRecipes(searchTerm) {
+  return recipes.filter(
+    (recipe) =>
+      recipe.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      recipe.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      recipe.ingredients.some((ingredient) =>
+        ingredient.ingredient.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+  );
+}
+} */
+
+function handleSearch() {
+  const searchForm = document.querySelector("#searchbar"); // Select search form
+  searchForm.addEventListener("input", (e) => {
+    const inputValue = e.target.value;
+    // At least 3 characters input to launch search
+    if (inputValue && inputValue.trim().length >= 3) {
+      const filteredRecipes = filterRecipes(inputValue);
+      renderRecipes(filteredRecipes);
+    } else {
+      renderRecipes(); // Rendering all recipes if empty input
+    }
+  });
+}
+
+function filterRecipes(searchTerm) {
+  const filteredRecipes = [];
+
+  for (let i = 0; i < recipes.length; i++) {
+    const recipe = recipes[i];
+    const nameMatch = recipe.name.toLowerCase().includes(searchTerm);
+    const descriptionMatch = recipe.description
+      .toLowerCase()
+      .includes(searchTerm);
+
+    let ingredientMatch = false;
+    for (let j = 0; j < recipe.ingredients.length; j++) {
+      const ingredient = recipe.ingredients[j];
+      if (ingredient.ingredient.toLowerCase().includes(searchTerm)) {
+        ingredientMatch = true;
+        break;
+      }
+    }
+    if (nameMatch || descriptionMatch || ingredientMatch) {
+      filteredRecipes.push(recipe);
+    }
+  }
+  return filteredRecipes;
+}
+
+filterRecipes();
+
+export function renderRecipes(searchResults = recipes) {
+  const recipesContainer = document.querySelector("#recipes");
+  recipesContainer.innerHTML = "";
+  createCard(searchResults);
+}
+
+handleSearch();
+
+// Get tags
 const uniqueIngredients = getIngredients(recipes);
 const uniqueAppliances = getAppliances(recipes);
-const uniqueUstensils = getUtensils(recipes);
+const uniqueUtensils = getUtensils(recipes);
 
-createFilterMenu("Ingredients", uniqueIngredients);
-createFilterMenu("Appliances", uniqueAppliances);
-createFilterMenu("Ustensils", uniqueUstensils);
-
-//console.log(filterContainer);
-
-// Searchbar
-searchForm.addEventListener("input", (e) => {
-  const searchInput = e.target.value;
-  if (searchInput.length >= 3) {
-    renderRecipes(searchInput);
-  } else if (searchInput.length === 0) {
-    renderRecipes();
-  }
-});
-
-// Truncate description if too long
-function truncateDescription(text, maxLength) {
-  let truncated = text;
-  if (truncated.length > maxLength) {
-    truncated = truncated.substr(0, maxLength) + "...";
-  }
-  return truncated;
-}
-
-async function renderRecipes(searchTerm = "") {
-  let contentHtml = "";
-  for (let i = 0; i < recipes.length; i++) {
-    let recipe = recipes[i];
-
-    let lowerCaseSearchTerm = searchTerm.toLowerCase();
-    let isTermInName = recipe.name.toLowerCase().includes(lowerCaseSearchTerm);
-    let isTermInDescription = recipe.description
-      .toLowerCase()
-      .includes(lowerCaseSearchTerm);
-
-    let isTermInIngredients = false;
-    for (let ingredient of recipe.ingredients) {
-      if (ingredient.ingredient.toLowerCase().includes(lowerCaseSearchTerm)) {
-        isTermInIngredients = true;
-        break;
-      }
-    }
-    let isTermInUstensils = false;
-    for (let utensil of recipe.ustensils) {
-      if (utensil.toLowerCase().includes(lowerCaseSearchTerm)) {
-        isTermInUstensils = true;
-        break;
-      }
-    }
-    if (
-      searchTerm.length >= 3 &&
-      !isTermInName &&
-      !isTermInDescription &&
-      !isTermInIngredients &&
-      !isTermInUstensils
-    ) {
-      continue;
-    }
-
-    let description = truncateDescription(recipe.description, 200);
-    contentHtml += `
-    <div class="col-12 col-sm-6 col-lg-4 p-3">
-      <div class="card rounded h-100">
-        <div class="container-img position-relative">
-          <img src="assets/photos/Recette${
-            recipe.id < 10 ? "0" + recipe.id : recipe.id
-          }.jpg" class="card-img rounded-top" alt="${recipe.name}" />
-          <div class="time-overlay d-flex align-items-center justify-content-center rounded-pill">
-            <p class="m-0">${recipe.time} min</p>
-          </div>
-        </div>
-        <div class="card-body m-2">
-          <h2 class="card-title fs-4 fw-bolder">${recipe.name}</h2>
-          <p class="recette">RECETTE</p>
-          <p class="card-text text-wrap">${description}</p>
-          <p>INGREDIENTS</p>
-          <div class="container-ingredients d-flex flex-row flex-wrap">
-        
-            ${recipe.ingredients
-              .map((ingredient) => {
-                if (ingredient.unit) {
-                  return `
-                    <div class="col-6">
-                      <span class="card-text mb-0 fw-bolder">${
-                        ingredient.ingredient
-                      }</span><br />
-                      <span class="card-text-quantity mb-0">${
-                        ingredient.quantity
-                      }</span> <span class="card-text-quantity"> ${ingredient.unit.slice(
-                    0,
-                    2
-                  )} <br />
-                    </div>
-                  `;
-                } else {
-                  return `
-                    <div class="col-6">
-                      <span class="card-text mb-0 fw-bolder">${ingredient.ingredient}</span><br />
-                      <span class="card-text-quantity mb-0">${ingredient.quantity}<br />
-                    </div>
-                  `;
-                }
-              })
-              .join("")}
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
-  }
-  recipesContainer.innerHTML = contentHtml;
-}
-
-renderRecipes();
+// Add tags to the DOM
+createFilterMenu("Ingredients", uniqueIngredients, renderRecipes);
+createFilterMenu("Appliances", uniqueAppliances, renderRecipes);
+createFilterMenu("Utensils", uniqueUtensils, renderRecipes);
