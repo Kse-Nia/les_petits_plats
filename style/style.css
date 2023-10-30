@@ -104,3 +104,8 @@ input:focus + .search_button {
   font-size: 1.5rem;
   font-weight: 700;
 }
+
+.selected-tags {
+  width: 100%;
+  flex-direction: row;
+}
