@@ -21,35 +21,40 @@
     <link rel="stylesheet" href="./style/style.css" />
   </head>
   <body>
-    <header class="container d-flex flex-column align-items-start">
+    <header
+      class="container d-flex flex-column align-items-start"
+      style="height: 100vh"
+    >
       <div class="logo m-4">
         <img src="./assets/Logo.png" alt="logo" />
       </div>
-      <div class="container d-flex flex-column align-items-center">
-        <h1 class="text-center">
-          CHERCHEZ PARMI PLUS DE 1500 RECETTES DU QUOTIDIEN, SIMPLES ET
-          DÉLICIEUSES
-        </h1>
-        <section class="search">
-          <div class="container_search d-flex justify-content-center">
-            <form action="#" class="form">
-              <div class="input-group input-group-text">
-                <input
-                  type="search"
-                  class="form-control searchbar border-0"
-                  id="searchbar"
-                  placeholder="Rechercher une recette, un ingrédient, ..."
-                />
-                <button
-                  class="search_button rounded btn btn-dark m-1 btn-lg"
-                  type="submit"
-                >
-                  <i class="bi bi-search"></i>
-                </button>
-              </div>
-            </form>
-          </div>
-        </section>
+      <div class="mx-auto my-auto">
+        <div class="container d-flex flex-column align-items-center">
+          <h1 class="text-center">
+            CHERCHEZ PARMI PLUS DE 1500 RECETTES DU QUOTIDIEN, SIMPLES ET
+            DÉLICIEUSES
+          </h1>
+          <section class="search">
+            <div class="container_search d-flex justify-content-center">
+              <form action="#" class="form">
+                <div class="input-group input-group-text">
+                  <input
+                    type="search"
+                    class="form-control searchbar border-0"
+                    id="searchbar"
+                    placeholder="Rechercher une recette, un ingrédient, ..."
+                  />
+                  <button
+                    class="search_button rounded btn btn-dark m-1 btn-lg"
+                    type="submit"
+                  >
+                    <i class="bi bi-search"></i>
+                  </button>
+                </div>
+              </form>
+            </div>
+          </section>
+        </div>
       </div>
     </header>
 
@@ -58,8 +63,8 @@
         class="d-flex flex-row align-items-center justify-content-between flex-md-row-reverse m-4"
       >
         <h4 class="m-0">1500 recettes</h4>
-        <div class="filters-container d-flex">
-          <div class="selected-tags-container"></div>
+        <div class="filters-container d-flex flex-column">
+          <div class="selected-tags-container d-flex flex-row"></div>
         </div>
       </section>
       <section class="selected-filters"></section>
