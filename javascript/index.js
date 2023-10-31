@@ -6,8 +6,6 @@ import {
   createFilterMenu,
 } from "./tags.js";
 
-console.log(recipes);
-
 function createCard(recipes) {
   const recipesContainer = document.querySelector("#recipes");
   const folderPictures = "assets/photos/";
@@ -154,6 +152,7 @@ function filterRecipes(searchTerm) {
       .includes(searchTerm);
 
     let ingredientMatch = false;
+    // Loop through all ingredients to check if one matches the search term
     for (let j = 0; j < recipe.ingredients.length; j++) {
       const ingredient = recipe.ingredients[j];
       if (ingredient.ingredient.toLowerCase().includes(searchTerm)) {
@@ -161,6 +160,7 @@ function filterRecipes(searchTerm) {
         break;
       }
     }
+    // Check if at least one match with name, description or ingredient
     if (nameMatch || descriptionMatch || ingredientMatch) {
       filteredRecipes.push(recipe);
     }

@@ -60,8 +60,8 @@ function createFilterMenu(categoryName, items, renderRecipes) {
 
   categoryWrapper.classList.add(
     "wrapper-category",
-    "flex",
-    "direction-column",
+    "d-flex",
+    "direction-row",
     "border",
     "rounded",
     "p-2",
@@ -103,19 +103,20 @@ function createFilterMenu(categoryName, items, renderRecipes) {
   itemList.style.backgroundColor = categoryTitle.style.backgroundColor;
   itemsList.appendChild(itemList);
 
-  items.forEach((item) => {
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i]; // Get element from array
     const listItem = document.createElement("div");
     const title = document.createElement("p");
     title.textContent = item;
-    listItem.appendChild(title);
-
     listItem.classList.add("tag");
+    listItem.appendChild(title);
 
     // Event
     listItem.addEventListener("click", function () {
       this.classList.toggle("selected");
+      this.setAttribute("tag-selected", this.classList.contains("selected"));
 
-      const selectedTags = {
+      /*       const selectedTags = {
         ingredients: Array.from(
           document
             .querySelector(".category_title-ingredients")
@@ -131,20 +132,46 @@ function createFilterMenu(categoryName, items, renderRecipes) {
             .querySelector(".category_title-utensils")
             .nextElementSibling.querySelectorAll(".selected")
         ).map((tag) => tag.textContent),
+      }; */
+
+      const selectedTags = {
+        ingredients: [],
+        appliances: [],
+        utensils: [],
       };
+      const categories = ["ingredients", "appliances", "utensils"];
+      for (let i = 0; i < categories.length; i++) {
+        const category = categories[i];
+        const listAdd = document
+          .querySelector(`.category_title-${category}`)
+          .nextElementSibling.querySelectorAll(".selected");
 
+        for (let j = 0; j < listAdd.length; j++) {
+          selectedTags[category].push(listAdd[j].textContent);
+        }
+      }
+
+      console.log("Selected Tags:", selectedTags);
       const searchResults = runSearch(recipes, selectedTags);
-      renderRecipes(searchResults); // Rendering recipes using search results
+      console.log("Search Results:", searchResults);
+      renderRecipes(searchResults);
 
+      renderRecipes(searchResults); // Rendering recipes from search results
       if (this.classList.contains("selected")) {
-        createSelectedTagButton(this.textContent, selectedTagsContainer);
+        createSelectedTagButton(
+          this.textContent,
+          selectedTagsContainer,
+          itemList
+        );
       } else {
         removeSelectedTagButton(this.textContent, selectedTagsContainer);
       }
+      // Hide from List if already selected
+      hideSelectedTag(itemList);
     });
 
     itemList.appendChild(listItem);
-  });
+  }
 
   // Event listener for search input in tags
   searchInput.addEventListener("input", () => {
@@ -185,10 +212,10 @@ function createFilterMenu(categoryName, items, renderRecipes) {
 }
 
 // Selecting filter tags
-function createSelectedTagButton(tagName, container) {
+function createSelectedTagButton(tagName, container, itemList) {
   const tagButton = document.createElement("button");
 
-  // Create a span element to hold the tag name
+  // Create a span element for name
   const span = document.createElement("span");
   span.textContent = tagName;
   tagButton.appendChild(span);
@@ -203,22 +230,103 @@ function createSelectedTagButton(tagName, container) {
   // Event listener for click on icon
   icon.addEventListener("click", () => {
     container.removeChild(tagButton);
+    hideSelectedTag(itemList);
   });
 
   container.appendChild(tagButton);
 }
 
-// Remove tag button
-function removeSelectedTagButton(tagName, container) {
-  const existingButtons = container.querySelectorAll(".selected-tag-button");
-  existingButtons.forEach((button) => {
-    if (button.textContent === tagName) {
-      container.removeChild(button);
+// Function hide selected tag from list
+/* version methode foreach
+function hideSelectedTag(itemList) {
+  const items = itemList.querySelectorAll(".tag");
+  items.forEach((item) => {
+    if (item.getAttribute("tag-selected") === "true") {
+      item.style.display = "none";
+    } else {
+      item.style.display = "block";
     }
   });
+} */
+
+function hideSelectedTag(itemList) {
+  const items = itemList.querySelectorAll(".tag");
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i];
+    if (item.getAttribute("tag-selected") === "true") {
+      item.style.display = "none";
+    } else {
+      item.style.display = "block";
+    }
+  }
 }
+// Remove tag button
+/*  version methoe foreach
+function removeSelectedTagButton(tagName, container) {
+  const selectedBtnTag = container.querySelectorAll(".selected-tag-button");
+  selectedBtnTag.forEach((button) => {
+      if (button.textContent === tagName) {
+          container.removeChild(button);
+          const categoryList = document.querySelectorAll('.item-list');
+          categoryList.forEach(list => {
+              const tags = list.querySelectorAll('.tag');
+              tags.forEach(tag => {
+                  if(tag.textContent === tagName){
+                      tag.setAttribute('data-selected', 'false');
+                      tag.style.display = 'block';
+                      tag.classList.remove('selected');
+                  }
+              });
+          });
+      }
+  });
+} */
+
+async function removeSelectedTagButton(tagName, container) {
+  const selectedBtnTag = container.querySelectorAll(".selected-tag-button");
+
+  for (let i = 0; i < selectedBtnTag.length; i++) {
+    const button = selectedBtnTag[i];
+    if (button.textContent === tagName) {
+      container.removeChild(button);
+      const categoryList = document.querySelectorAll(".item-list");
+      for (let j = 0; j < categoryList.length; j++) {
+        const list = categoryList[j];
+        const tags = list.querySelectorAll(".tag");
+        for (let k = 0; k < tags.length; k++) {
+          const tag = tags[k];
+          if (tag.textContent === tagName) {
+            tag.setAttribute("tag-selected", "false");
+            tag.style.display = "block";
+            tag.classList.remove("selected");
+          }
+        }
+      }
+      const selectedTags = {
+        ingredients: [],
+        appliances: [],
+        utensils: [],
+      };
+      const categories = ["ingredients", "appliances", "utensils"];
+      for (let i = 0; i < categories.length; i++) {
+        const category = categories[i];
+        const listAdd = document
+          .querySelector(`.category_title-${category}`)
+          .nextElementSibling.querySelectorAll(".selected");
+
+        for (let j = 0; j < listAdd.length; j++) {
+          selectedTags[category].push(listAdd[j].textContent);
+        }
+      }
+      const searchResults = runSearch(recipes, selectedTags);
+      renderRecipes(searchResults);
+    }
+  }
+}
+
 // Search
-function runSearch(recipes, selectedTags) {
+// Methode 1
+/* function runSearch(recipes, selectedTags) {
   return recipes.filter((recipe) => {
     const ingredientsMatch = selectedTags.ingredients.every((tag) =>
       recipe.ingredients.some(
@@ -236,6 +344,75 @@ function runSearch(recipes, selectedTags) {
     );
     return ingredientsMatch && appliancesMatch && utensilsMatch;
   });
+} */
+
+function runSearch(recipes, selectedTags) {
+  // Store matching recipes
+  console.log(recipes, selectedTags);
+  const matchingRecipes = [];
+
+  // loop through all recipes
+  for (let i = 0; i < recipes.length; i++) {
+    const recipe = recipes[i];
+    let ingredientsMatch = true;
+    let appliancesMatch = true;
+    let utensilsMatch = true;
+
+    // Check if selected tags match with the recipe ingredients
+    for (let j = 0; j < selectedTags.ingredients.length; j++) {
+      const tag = selectedTags.ingredients[j];
+      let tagMatch = false;
+      for (let k = 0; k < recipe.ingredients.length; k++) {
+        const ingredient = recipe.ingredients[k];
+        if (ingredient.ingredient.toLowerCase() === tag.toLowerCase()) {
+          tagMatch = true;
+          break;
+        }
+      }
+      // If no match found, set False
+      if (!tagMatch) {
+        ingredientsMatch = false;
+        break;
+      }
+    }
+
+    // Check if all selected appliance tags match with recipe appliance
+    for (let j = 0; j < selectedTags.appliances.length; j++) {
+      const tag = selectedTags.appliances[j];
+      if (recipe.appliance.toLowerCase() !== tag.toLowerCase()) {
+        appliancesMatch = false;
+        break;
+      }
+    }
+
+    // Check if all selected utensil tags match with recipe utensils
+    for (let j = 0; j < selectedTags.utensils.length; j++) {
+      console.log("selectedtag length", selectedTags.utensils[j]);
+
+      const tag = selectedTags.utensils[j];
+      let tagMatch = false;
+      for (let k = 0; k < recipe.utensils.length; k++) {
+        const utensil = recipe.utensils[k];
+        if (utensil.toLowerCase() === tag.toLowerCase()) {
+          tagMatch = true;
+          console.log("tag match", tagMatch);
+          break; // Breaf if match found
+        }
+      }
+      // If any tag doesn't match, set utensilsMatch to false and break
+      if (!tagMatch) {
+        utensilsMatch = false;
+        break;
+      }
+    }
+
+    // If all tags match, add the recipe to the matchingRecipes array
+    if (ingredientsMatch && appliancesMatch && utensilsMatch) {
+      matchingRecipes.push(recipe);
+    }
+  }
+  // matching recipes
+  return matchingRecipes;
 }
 
 export {
@@ -248,7 +425,7 @@ export {
 
 function initButtonClickEvent() {
   const button = document.querySelector("#myButton");
-  // Verify if button exists
+  // Check if button exists
   if (button) {
     button.addEventListener("click", () => {
       console.log("vous avez cliqué sur le bouton !");
