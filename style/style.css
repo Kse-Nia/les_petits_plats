@@ -83,6 +83,8 @@ input:focus + .search_button {
 .item-list {
   background-color: #fff;
   width: 195px;
+  max-height: 200px;
+  overflow: scroll;
 }
 .rotate-icon {
   transform: rotate(180deg);
