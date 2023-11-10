@@ -50,15 +50,13 @@ function getUtensils(recipes) {
 
 // DOM
 function createFilterMenu(categoryName, items, renderRecipes) {
-  const filterContainer = document.querySelector(".filters-container");
-  const selectedTagSection = document.querySelector(".selected-filters");
+  const filtersTagContainer = document.querySelector(".filters-tags-container");
   const selectedTagsContainer = document.querySelector(
     ".selected-tags-container"
   );
-  selectedTagsContainer.appendChild(selectedTagSection);
-  const categoryWrapper = document.createElement("div");
-  const tagIcon = document.createElement("i");
 
+  // Create category wrapper
+  const categoryWrapper = document.createElement("div");
   categoryWrapper.classList.add(
     "wrapper-category",
     "d-flex",
@@ -70,49 +68,60 @@ function createFilterMenu(categoryName, items, renderRecipes) {
     "bg-white"
   );
 
+  // Create category title
   const categoryTitle = document.createElement("div");
   categoryTitle.classList.add(
     `category_title-${categoryName.toLowerCase().split(" ").join("-")}`,
     "m-1"
   );
+  categoryTitle.textContent = categoryName;
+
+  // Create tag icon
+  const tagIcon = document.createElement("i");
   tagIcon.classList.add(
     "bi",
     "bi-chevron-compact-down",
     "custom-margin",
     "bi-2x"
   );
-
-  categoryTitle.textContent = categoryName;
   categoryTitle.appendChild(tagIcon);
 
+  // Append category title to category wrapper
   categoryWrapper.appendChild(categoryTitle);
 
+  // Create items list container
   const itemsList = document.createElement("div");
   itemsList.style.display = "none";
   itemsList.classList.add("dropdown-content", "flex", "direction-column");
-  categoryWrapper.appendChild(itemsList);
 
-  // Search input
+  // Create search input
   const searchInput = document.createElement("input");
   searchInput.setAttribute("type", "text");
   searchInput.classList.add("search-input");
   itemsList.appendChild(searchInput);
 
-  // Items list
+  // Create items list
   const itemList = document.createElement("div");
   itemList.classList.add("item-list");
   itemList.style.backgroundColor = categoryTitle.style.backgroundColor;
   itemsList.appendChild(itemList);
 
-  for (let i = 0; i < items.length; i++) {
-    const item = items[i]; // Get element from array
+  // Append items list to category wrapper
+  categoryWrapper.appendChild(itemsList);
+
+  // Append category wrapper to filters tag container
+  filtersTagContainer.appendChild(categoryWrapper);
+
+  // Populate items list
+  items.forEach((item) => {
     const listItem = document.createElement("div");
+    listItem.classList.add("tag");
+
     const title = document.createElement("p");
     title.textContent = item;
-    listItem.classList.add("tag");
     listItem.appendChild(title);
 
-    // Event
+    // Tag click event
     listItem.addEventListener("click", function () {
       this.classList.toggle("selected");
       this.setAttribute("tag-selected", this.classList.contains("selected"));
@@ -149,9 +158,9 @@ function createFilterMenu(categoryName, items, renderRecipes) {
     });
 
     itemList.appendChild(listItem);
-  }
+  });
 
-  // Event listener for search input in tags
+  // Search input event listener
   searchInput.addEventListener("input", () => {
     const searchValue = searchInput.value.toLowerCase();
     const listItems = itemList.getElementsByClassName("tag");
@@ -173,20 +182,12 @@ function createFilterMenu(categoryName, items, renderRecipes) {
     }
   });
 
-  // Open Filter on click
+  // Category title click event (to toggle dropdown)
   categoryTitle.addEventListener("click", () => {
-    tagIcon.classList.toggle("rotate-icon"); // add rotate class
+    tagIcon.classList.toggle("rotate-icon");
     itemsList.style.display =
       itemsList.style.display === "none" ? "block" : "none";
-    console.log("Rotate toggled");
-    console.log(tagIcon);
   });
-
-  categoryWrapper.appendChild(itemsList);
-  filterContainer.appendChild(categoryWrapper);
-
-  categoryWrapper.appendChild(itemsList);
-  filterContainer.appendChild(categoryWrapper);
 }
 
 // Selecting filter tags
