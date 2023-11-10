@@ -86,19 +86,16 @@ function createFilterMenu(categoryName, items, renderRecipes) {
   );
   categoryTitle.appendChild(tagIcon);
 
-  // Append category title to category wrapper
   categoryWrapper.appendChild(categoryTitle);
 
   // Create items list container
   const itemsList = document.createElement("div");
   itemsList.style.display = "none";
-  itemsList.classList.add("dropdown-content", "flex", "direction-column");
-
-  // Create search input
-  const searchInput = document.createElement("input");
-  searchInput.setAttribute("type", "text");
-  searchInput.classList.add("search-input");
-  itemsList.appendChild(searchInput);
+  itemsList.classList.add(
+    "dropdown-content",
+    "flex",
+    "direction-column-reverse"
+  );
 
   // Create items list
   const itemList = document.createElement("div");
@@ -113,7 +110,8 @@ function createFilterMenu(categoryName, items, renderRecipes) {
   filtersTagContainer.appendChild(categoryWrapper);
 
   // Populate items list
-  items.forEach((item) => {
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i];
     const listItem = document.createElement("div");
     listItem.classList.add("tag");
 
@@ -153,17 +151,45 @@ function createFilterMenu(categoryName, items, renderRecipes) {
       } else {
         removeSelectedTagButton(this.textContent, selectedTagsContainer);
       }
-      // Hide from List if already selected
+      console.log(selectedTags);
       hideSelectedTag(itemList);
     });
-
     itemList.appendChild(listItem);
-  });
+  }
+
+  // Search input container
+  const searchContainer = document.createElement("div");
+  searchContainer.classList.add("search-container");
+
+  // Create search input
+  const searchInput = document.createElement("input");
+  searchInput.setAttribute("type", "text");
+  searchInput.classList.add("search-input");
+  searchInput.setAttribute("placeholder", "Search");
+
+  // Append search input to the container
+  searchContainer.appendChild(searchInput);
+
+  // Create clear icon
+  const clearIcon = document.createElement("i");
+  clearIcon.classList.add("bi", "bi-x-lg", "clear-icon");
+  clearIcon.style.visibility = "hidden"; // Hide initially
+  searchContainer.appendChild(clearIcon);
+
+  // Create search icon
+  const searchIcon = document.createElement("i");
+  searchIcon.classList.add("bi", "bi-search", "search-icon");
+  searchContainer.appendChild(searchIcon);
+
+  // Append the container to itemsList
+  itemsList.appendChild(searchContainer);
 
   // Search input event listener
   searchInput.addEventListener("input", () => {
     const searchValue = searchInput.value.toLowerCase();
     const listItems = itemList.getElementsByClassName("tag");
+    clearIcon.style.visibility =
+      searchInput.value.length > 0 ? "visible" : "hidden";
 
     // Search with at least 3 letters
     if (searchValue.length >= 3) {
@@ -179,6 +205,17 @@ function createFilterMenu(categoryName, items, renderRecipes) {
       for (let i = 0; i < listItems.length; i++) {
         listItems[i].style.display = "block";
       }
+    }
+  });
+
+  // Clearing search input if clicked clear icon
+  clearIcon.addEventListener("click", () => {
+    searchInput.value = "";
+    clearIcon.style.visibility = "hidden";
+
+    const listItems = itemList.getElementsByClassName("tag");
+    for (let i = 0; i < listItems.length; i++) {
+      listItems[i].style.display = "block";
     }
   });
 
@@ -201,7 +238,7 @@ function createSelectedTagButton(tagName, container, itemList) {
 
   // Add remove icon
   const icon = document.createElement("i");
-  icon.classList.add("bi", "bi-x", "tag_close-icon");
+  icon.classList.add("bi", "bi-x", "tag_close-icon"); // Remove icon
   tagButton.appendChild(icon);
 
   tagButton.classList.add("selected-tag-button");
@@ -270,93 +307,10 @@ async function removeSelectedTagButton(tagName, container) {
   }
 }
 
-// Search
-function runSearch(
-  recipes,
-  selectedTags = { ingredients: [], appliances: [], ustensils: [] }
-) {
-  const matchingRecipes = [];
-
-  // Defined or empty array
-  selectedTags.ustensils = selectedTags.ustensils || [];
-  selectedTags.appliances = selectedTags.appliances || [];
-  selectedTags.ingredients = selectedTags.ingredients || [];
-
-  // Check if no tag
-  if (!selectedTags) {
-    console.error("selectedTags not found");
-    return [];
-  }
-
-  // loop through all recipes
-  for (let i = 0; i < recipes.length; i++) {
-    const recipe = recipes[i];
-    let ingredientsMatch = true;
-    let appliancesMatch = true;
-    let utensilsMatch = true;
-
-    // Check if selected tags match with the recipe ingredients
-    for (let j = 0; j < selectedTags.ustensils.length; j++) {
-      const tag = selectedTags.ustensils[j];
-      let tagMatch = false;
-      if (recipe.ustensils) {
-        for (let k = 0; k < recipe.ustensils.length; k++) {
-          const ustensil = recipe.ustensils[k];
-          if (ustensil.toLowerCase() === tag.toLowerCase()) {
-            tagMatch = true;
-            console.log("tag match", tagMatch);
-            break; // Not match
-          }
-        }
-      }
-      // Error chech if no tag
-      if (!tagMatch) {
-        utensilsMatch = false;
-        break;
-      }
-    }
-
-    // Check if all selected appliance tags match with recipe appliance
-    for (let j = 0; j < selectedTags.appliances.length; j++) {
-      const tag = selectedTags.appliances[j];
-      if (recipe.appliance.toLowerCase() !== tag.toLowerCase()) {
-        appliancesMatch = false;
-        break;
-      }
-    }
-
-    // Check if all selected utensil tags match with recipe utensils
-    for (let j = 0; j < selectedTags.ustensils.length; j++) {
-      const tag = selectedTags.ustensils[j];
-      let tagMatch = false;
-      for (let k = 0; k < recipe.ustensils.length; k++) {
-        const ustensil = recipe.ustensils[k];
-        if (ustensil.toLowerCase() === tag.toLowerCase()) {
-          tagMatch = true;
-          console.log("tag match", tagMatch);
-          break; // Breaf if match found
-        }
-      }
-      // If any tag doesn't match, set utensilsMatch to false and break
-      if (!tagMatch) {
-        utensilsMatch = false;
-        break;
-      }
-    }
-
-    // If all tags match, add the recipe to the matchingRecipes array
-    if (ingredientsMatch && appliancesMatch && utensilsMatch) {
-      matchingRecipes.push(recipe);
-    }
-  }
-  // matching recipes
-  return matchingRecipes;
-}
-
 export {
   getIngredients,
   getAppliances,
   getUtensils,
   createFilterMenu,
-  runSearch,
+  /*  runSearch, */
 };
