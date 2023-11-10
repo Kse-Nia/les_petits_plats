@@ -1,3 +1,9 @@
+.card-text-quantity,
+.recette,
+.search-input,
+.searchbar {
+  color: #7a7a7a;
+}
 *,
 header {
   margin: 0;
@@ -5,11 +11,6 @@ header {
 .time-overlay,
 input:focus + .search_button svg path {
   background-color: #ffd15b;
-}
-.card-text-quantity,
-.recette,
-.searchbar {
-  color: #7a7a7a;
 }
 * {
   padding: 0;
@@ -75,16 +76,20 @@ input:focus + .search_button {
   left: 0;
   z-index: 1;
   width: 100%;
-  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+}
+.search-container,
+.wrapper-category {
+  position: relative;
 }
 .custom-margin {
   margin-left: 2rem;
 }
 .wrapper-category {
-  position: relative;
+  font-family: Manrope, sans-serif;
 }
 .item-list {
   background-color: #fff;
+  border: none;
   padding: 0;
   max-width: 195px;
   max-height: 200px;
@@ -138,4 +143,29 @@ input:focus + .search_button {
 .tag {
   width: 100%;
   max-width: 100%;
+  padding-right: 30px;
+}
+.search-input {
+  width: 100%;
+  padding-right: 35px;
+}
+.clear-icon,
+.search-icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #191919;
+}
+.search-icon {
+  right: 30px;
+  color: #c6c6c6;
+}
+.clear-icon {
+  right: 5px;
+}
+.category_title {
+  font-weight: 500;
+  font-size: 1.5rem;
+  color: #1b1b1b;
 }
