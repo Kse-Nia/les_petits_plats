@@ -86,7 +86,6 @@ function createCard(recipes) {
     cardBody.appendChild(ingredientsContainer);
 
     for (let j = 0; j < recipes[i].ingredients.length; j++) {
-      /*    console.log(recipes[i].ingredients[j]); */
       const ingredient = recipes[i].ingredients[j]; // Get all ingredients
       const ingredientDiv = document.createElement("div"); // Ingredient div container
       ingredientDiv.classList.add("col-6");
@@ -113,7 +112,7 @@ createCard(recipes);
 
 // Search and rendering
 function handleSearch(recipes) {
-  const searchInputEl = document.querySelector(".searchbar"); // Ensure this selector matches your search input in the HTML
+  const searchInputEl = document.querySelector(".searchbar"); // Search input element
 
   if (searchInputEl) {
     searchInputEl.addEventListener("input", () => {
@@ -126,6 +125,7 @@ function handleSearch(recipes) {
 
 function filterRecipes(searchInput, recipes) {
   const filteredRecipes = [];
+
   // At least 3 characters to start searching
   if (searchInput && searchInput.trim().length >= 3) {
     const lowerCaseInput = searchInput.toLowerCase();

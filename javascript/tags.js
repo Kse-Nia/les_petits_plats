@@ -103,10 +103,7 @@ function createFilterMenu(categoryName, items, renderRecipes) {
   itemList.style.backgroundColor = categoryTitle.style.backgroundColor;
   itemsList.appendChild(itemList);
 
-  // Append items list to category wrapper
   categoryWrapper.appendChild(itemsList);
-
-  // Append category wrapper to filters tag container
   filtersTagContainer.appendChild(categoryWrapper);
 
   // Populate items list
@@ -219,7 +216,7 @@ function createFilterMenu(categoryName, items, renderRecipes) {
     }
   });
 
-  // Category title click event (to toggle dropdown)
+  // Category title click event (toggle dropdown)
   categoryTitle.addEventListener("click", () => {
     tagIcon.classList.toggle("rotate-icon");
     itemsList.style.display =
@@ -307,10 +304,4 @@ async function removeSelectedTagButton(tagName, container) {
   }
 }
 
-export {
-  getIngredients,
-  getAppliances,
-  getUtensils,
-  createFilterMenu,
-  /*  runSearch, */
-};
+export { getIngredients, getAppliances, getUtensils, createFilterMenu };
