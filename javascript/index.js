@@ -4,7 +4,7 @@ import {
   getIngredients,
   getUtensils,
   createFilterMenu,
-  /*   runSearch, */
+  selectedTags,
 } from "./tags.js";
 
 function createCard(recipes) {
@@ -115,59 +115,50 @@ function handleSearch(recipes) {
   const searchInputEl = document.querySelector(".searchbar"); // Search input element
 
   if (searchInputEl) {
-    searchInputEl.addEventListener("input", () => {
-      const searchValue = searchInputEl.value;
-      const filteredRecipes = filterRecipes(searchValue, recipes);
-      renderRecipes(filteredRecipes);
-    });
+    searchInputEl.addEventListener("input", filterAndRenderRecipes);
   }
 }
 
 function filterRecipes(searchInput, recipes) {
-  const filteredRecipes = [];
+  const filteredRecipes = recipes.filter((recipe) => {
+    const matchesSearchInput =
+      searchInput.length < 3 ||
+      recipe.name.toLowerCase().includes(searchInput.toLowerCase()) ||
+      recipe.description.toLowerCase().includes(searchInput.toLowerCase()) ||
+      recipe.ingredients.some((ingredient) =>
+        ingredient.ingredient.toLowerCase().includes(searchInput.toLowerCase())
+      );
 
-  // At least 3 characters to start searching
-  if (searchInput && searchInput.trim().length >= 3) {
-    const lowerCaseInput = searchInput.toLowerCase();
-    for (let i = 0; i < recipes.length; i++) {
-      const recipe = recipes[i];
-
-      // Check in title
-      if (recipe.name.toLowerCase().includes(lowerCaseInput)) {
-        filteredRecipes.push(recipe);
-        continue;
+    const matchesTags = Object.entries(selectedTags).every(
+      ([category, tags]) => {
+        if (tags.length === 0) return true; // No filter
+        if (category === "ingredients")
+          return recipe.ingredients.some((ingredient) =>
+            tags.includes(ingredient.ingredient)
+          );
+        if (category === "appliances") return tags.includes(recipe.appliance);
+        if (category === "utensils")
+          return recipe.utensils.some((utensil) => tags.includes(utensil));
+        return false;
       }
+    );
 
-      // Check in description
-      if (recipe.description.toLowerCase().includes(lowerCaseInput)) {
-        filteredRecipes.push(recipe);
-        continue;
-      }
-
-      // Check in ingredients
-      for (let j = 0; j < recipe.ingredients.length; j++) {
-        if (
-          recipe.ingredients[j].ingredient
-            .toLowerCase()
-            .includes(lowerCaseInput)
-        ) {
-          filteredRecipes.push(recipe);
-          break; // Break the inner loop if match found
-        }
-      }
-    }
-  } else {
-    // If the search term is less than 3 characters, return all recipes
-    return recipes;
-  }
+    return matchesSearchInput && matchesTags;
+  });
 
   return filteredRecipes;
 }
 
 export function renderRecipes(filteredRecipes) {
   const recipesContainer = document.querySelector("#recipes");
-  recipesContainer.innerHTML = ""; // Clear existing recipes
-  createCard(filteredRecipes); // Create cards for filtered recipes
+  recipesContainer.innerHTML = ""; // Clear recipes
+  createCard(filteredRecipes); // Cards creation with filtered render
+}
+
+export function filterAndRenderRecipes() {
+  const searchValue = document.querySelector(".searchbar").value.trim();
+  const filteredRecipes = filterRecipes(searchValue, recipes);
+  renderRecipes(filteredRecipes);
 }
 
 // Initialize the search functionality

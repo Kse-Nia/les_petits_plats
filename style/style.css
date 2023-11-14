@@ -90,14 +90,15 @@ input:focus + .search_button {
 .item-list {
   background-color: #fff;
   border: none;
-  padding: 0;
-  max-width: 195px;
+  padding: 0 !important;
+  /*   max-width: 195px; */
+  width: 100%;
   max-height: 200px;
   overflow: scroll;
 }
 .rotate-icon {
   transform: rotate(180deg);
-  transition: transform 0.5s ease-in-out;
+  transition: transform 0.5s ease;
 }
 .selected-tag-button {
   display: flex;

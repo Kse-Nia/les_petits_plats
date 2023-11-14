@@ -1,5 +1,5 @@
 import { recipes } from "../data/recipes.js";
-import { renderRecipes } from "./index.js";
+import { renderRecipes, filterAndRenderRecipes } from "./index.js";
 
 // Get all types of filter tags
 function getIngredients(recipes) {
@@ -36,16 +36,50 @@ function getAppliances(recipes) {
 }
 
 function getUtensils(recipes) {
-  const utensils = [];
+  const ustensils = [];
   for (let i = 0; i < recipes.length; i++) {
     for (let j = 0; j < recipes[i].ustensils.length; j++) {
-      if (!utensils.includes(recipes[i].ustensils[j])) {
-        utensils.push(recipes[i].ustensils[j]);
+      if (!ustensils.includes(recipes[i].ustensils[j])) {
+        ustensils.push(recipes[i].ustensils[j]);
       }
     }
   }
-  utensils.sort();
-  return utensils;
+  ustensils.sort();
+  return ustensils;
+}
+
+// Init selected tags array
+const selectedTags = {
+  ingredients: [],
+  appliances: [],
+  ustensils: [],
+};
+
+// Category
+function determinedCategory(categoryName) {
+  const categorySelector = {
+    Ingredients: "ingredients",
+    Appliances: "appliances",
+    Ustensils: "ustensils",
+  };
+
+  return categorySelector[categoryName] || null;
+}
+
+function updateSelectedTags(category, tag, isSelected) {
+  if (isSelected) {
+    // Add tag to the selectedTags
+    if (!selectedTags[category].includes(tag)) {
+      selectedTags[category].push(tag);
+      console.log("update", selectedTags);
+    }
+  } else {
+    // Remove tag from selectedTags
+    const index = selectedTags[category].indexOf(tag);
+    if (index > -1) {
+      selectedTags[category].splice(index, 1);
+    }
+  }
 }
 
 // DOM
@@ -118,38 +152,10 @@ function createFilterMenu(categoryName, items, renderRecipes) {
 
     // Tag click event
     listItem.addEventListener("click", function () {
-      this.classList.toggle("selected");
-      this.setAttribute("tag-selected", this.classList.contains("selected"));
-
-      // Array with tags
-      const selectedTags = {
-        ingredients: [],
-        appliances: [],
-        utensils: [],
-      };
-      const categories = ["ingredients", "appliances", "utensils"];
-      for (let i = 0; i < categories.length; i++) {
-        const category = categories[i];
-        const listAdd = document
-          .querySelector(`.category_title-${category}`)
-          .nextElementSibling.querySelectorAll(".selected");
-
-        for (let j = 0; j < listAdd.length; j++) {
-          selectedTags[category].push(listAdd[j].textContent);
-        }
-      }
-
-      if (this.classList.contains("selected")) {
-        createSelectedTagButton(
-          this.textContent,
-          selectedTagsContainer,
-          itemList
-        );
-      } else {
-        removeSelectedTagButton(this.textContent, selectedTagsContainer);
-      }
-      console.log(selectedTags);
-      hideSelectedTag(itemList);
+      const isSelected = this.classList.toggle("selected");
+      const category = determinedCategory(categoryName); // Determine category
+      updateSelectedTags(category, this.textContent, isSelected);
+      filterAndRenderRecipes();
     });
     itemList.appendChild(listItem);
   }
@@ -221,13 +227,18 @@ function createFilterMenu(categoryName, items, renderRecipes) {
     tagIcon.classList.toggle("rotate-icon");
     itemsList.style.display =
       itemsList.style.display === "none" ? "block" : "none";
+    console.log(selectedTags);
+    console.log("rotated !!!");
   });
 }
 
 // Selecting filter tags
-function createSelectedTagButton(tagName, container, itemList) {
-  const tagButton = document.createElement("button");
+function createSelectedTagButton(tagName, itemList) {
+  const selectedTagsContainer = document.querySelector(
+    ".selected-tags-container"
+  );
 
+  const tagButton = document.createElement("button");
   // Create a span element for name
   const span = document.createElement("span");
   span.textContent = tagName;
@@ -242,11 +253,11 @@ function createSelectedTagButton(tagName, container, itemList) {
 
   // Event listener for click on icon
   icon.addEventListener("click", () => {
-    container.removeChild(tagButton);
+    selectedTagsContainer.removeChild(tagButton);
     hideSelectedTag(itemList);
   });
-
-  container.appendChild(tagButton);
+  selectedTagsContainer.appendChild(tagButton);
+  console.log(selectedTags);
 }
 
 // Function hide selected tag from list
@@ -282,12 +293,8 @@ async function removeSelectedTagButton(tagName, container) {
           }
         }
       }
-      const selectedTags = {
-        ingredients: [],
-        appliances: [],
-        utensils: [],
-      };
-      const categories = ["ingredients", "appliances", "utensils"];
+
+      const categories = ["ingredients", "appliances", "ustensils"];
       for (let i = 0; i < categories.length; i++) {
         const category = categories[i];
         const listAdd = document
@@ -304,4 +311,10 @@ async function removeSelectedTagButton(tagName, container) {
   }
 }
 
-export { getIngredients, getAppliances, getUtensils, createFilterMenu };
+export {
+  getIngredients,
+  getAppliances,
+  getUtensils,
+  createFilterMenu,
+  selectedTags,
+};
