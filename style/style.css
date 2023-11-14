@@ -45,7 +45,7 @@ h1 {
   font-size: 1rem;
 }
 .search_button svg path {
-  fill: #ffffff;
+  color: #ffffff;
 }
 input:focus + .search_button {
   background-color: #ffd15b;
@@ -91,7 +91,6 @@ input:focus + .search_button {
   background-color: #fff;
   border: none;
   padding: 0 !important;
-  /*   max-width: 195px; */
   width: 100%;
   max-height: 200px;
   overflow: scroll;
@@ -123,7 +122,7 @@ input:focus + .search_button {
 .tags-wrapper {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between !important;
+  justify-content: space-between;
   align-items: center;
   margin: 0 auto;
   padding: 0 10px;
