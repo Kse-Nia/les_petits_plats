@@ -2,7 +2,7 @@ import { recipes } from "../data/recipes.js";
 import {
   getAppliances,
   getIngredients,
-  getUtensils,
+  getUstensils,
   createFilterMenu,
   selectedTags,
 } from "./tags.js";
@@ -120,31 +120,60 @@ function handleSearch(recipes) {
 }
 
 function filterRecipes(searchInput, recipes) {
-  const filteredRecipes = recipes.filter((recipe) => {
+  const filteredRecipes = [];
+  for (let i = 0; i < recipes.length; i++) {
+    const recipe = recipes[i];
+    const recipeName = recipe.name.toLowerCase();
+    const recipeDescription = recipe.description.toLowerCase();
+
     const matchesSearchInput =
       searchInput.length < 3 ||
-      recipe.name.toLowerCase().includes(searchInput.toLowerCase()) ||
-      recipe.description.toLowerCase().includes(searchInput.toLowerCase()) ||
-      recipe.ingredients.some((ingredient) =>
-        ingredient.ingredient.toLowerCase().includes(searchInput.toLowerCase())
-      );
+      recipeName.includes(searchInput.toLowerCase()) ||
+      recipeDescription.includes(searchInput.toLowerCase());
 
-    const matchesTags = Object.entries(selectedTags).every(
-      ([category, tags]) => {
-        if (tags.length === 0) return true; // No filter
-        if (category === "ingredients")
-          return recipe.ingredients.some((ingredient) =>
-            tags.includes(ingredient.ingredient)
+    let matchesTags = true;
+
+    for (const [category, tags] of Object.entries(selectedTags)) {
+      if (tags.length === 0) continue;
+
+      let categoryMatch = false;
+
+      if (category === "ingredients") {
+        for (const tag of tags) {
+          categoryMatch = recipe.ingredients.some(
+            (ingredient) =>
+              ingredient.ingredient.toLowerCase() === tag.toLowerCase()
           );
-        if (category === "appliances") return tags.includes(recipe.appliance);
-        if (category === "utensils")
-          return recipe.utensils.some((utensil) => tags.includes(utensil));
-        return false;
+          if (!categoryMatch) break;
+        }
+      } else if (category === "appliances") {
+        for (const tag of tags) {
+          if (recipe.appliance.toLowerCase() === tag.toLowerCase()) {
+            categoryMatch = true;
+          } else {
+            categoryMatch = false;
+            break;
+          }
+        }
+      } else if (category === "ustensils") {
+        for (const tag of tags) {
+          categoryMatch = recipe.ustensils.some(
+            (ustensil) => ustensil.toLowerCase() === tag.toLowerCase()
+          );
+          if (!categoryMatch) break;
+        }
       }
-    );
 
-    return matchesSearchInput && matchesTags;
-  });
+      if (!categoryMatch) {
+        matchesTags = false;
+        break;
+      }
+    }
+
+    if (matchesSearchInput && matchesTags) {
+      filteredRecipes.push(recipe);
+    }
+  }
 
   return filteredRecipes;
 }
@@ -167,9 +196,9 @@ handleSearch(recipes);
 // Get tags
 const uniqueIngredients = getIngredients(recipes);
 const uniqueAppliances = getAppliances(recipes);
-const uniqueUtensils = getUtensils(recipes);
+const uniqueUstensils = getUstensils(recipes);
 
 // Add tags to the DOM
 createFilterMenu("Ingredients", uniqueIngredients, renderRecipes);
 createFilterMenu("Appliances", uniqueAppliances, renderRecipes);
-createFilterMenu("Utensils", uniqueUtensils, renderRecipes);
+createFilterMenu("Ustensils", uniqueUstensils, renderRecipes);
