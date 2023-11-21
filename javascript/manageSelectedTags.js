@@ -10,7 +10,6 @@ function determinedCategory(categoryName) {
     Appliances: "appliances",
     Ustensils: "ustensils",
   };
-
   return categoryMap[categoryName] || null;
 }
 
