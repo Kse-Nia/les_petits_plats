@@ -4,8 +4,8 @@ import {
   getIngredients,
   getUstensils,
   createFilterMenu,
-  selectedTags,
 } from "./tags.js";
+import { getSelectedTags } from "./manageSelectedTags.js";
 
 function createCard(recipes) {
   const recipesContainer = document.querySelector("#recipes");
@@ -107,7 +107,6 @@ function createCard(recipes) {
     recipesContainer.appendChild(card);
   }
 }
-
 createCard(recipes);
 
 // Search and rendering
@@ -120,6 +119,7 @@ function handleSearch(recipes) {
 }
 
 function filterRecipes(searchInput, recipes) {
+  const selectedTags = getSelectedTags(); // Get selected tags
   const filteredRecipes = [];
   for (let i = 0; i < recipes.length; i++) {
     const recipe = recipes[i];
@@ -132,12 +132,10 @@ function filterRecipes(searchInput, recipes) {
       recipeDescription.includes(searchInput.toLowerCase());
 
     let matchesTags = true;
-
+    // Check if recipe matches selected tags in each category;
     for (const [category, tags] of Object.entries(selectedTags)) {
       if (tags.length === 0) continue;
-
       let categoryMatch = false;
-
       if (category === "ingredients") {
         for (const tag of tags) {
           categoryMatch = recipe.ingredients.some(
@@ -163,37 +161,42 @@ function filterRecipes(searchInput, recipes) {
           if (!categoryMatch) break;
         }
       }
-
       if (!categoryMatch) {
         matchesTags = false;
         break;
       }
     }
-
     if (matchesSearchInput && matchesTags) {
       filteredRecipes.push(recipe);
     }
   }
-
   return filteredRecipes;
 }
 
-export function renderRecipes(filteredRecipes) {
+export function renderRecipes(filteredRecipes, searchInput) {
   const recipesContainer = document.querySelector("#recipes");
   recipesContainer.innerHTML = ""; // Clear recipes
-  createCard(filteredRecipes); // Cards creation with filtered render
+
+  if (filteredRecipes.length === 0) {
+    // No matched recipes -> display message for no result
+    const noRecipesMessage = document.createElement("p");
+    noRecipesMessage.textContent = `Aucune recette ne contient '${searchInput}', vous pouvez chercher "tarte aux pommes", "poisson", etc.`;
+    recipesContainer.appendChild(noRecipesMessage);
+  } else {
+    createCard(filteredRecipes);
+  }
 }
 
 export function filterAndRenderRecipes() {
   const searchValue = document.querySelector(".searchbar").value.trim();
   const filteredRecipes = filterRecipes(searchValue, recipes);
-  renderRecipes(filteredRecipes);
+  renderRecipes(filteredRecipes, searchValue);
 }
 
 // Initialize the search functionality
 handleSearch(recipes);
 
-// Get tags
+// Manage tags and rendering
 const uniqueIngredients = getIngredients(recipes);
 const uniqueAppliances = getAppliances(recipes);
 const uniqueUstensils = getUstensils(recipes);

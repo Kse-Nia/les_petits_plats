@@ -1,4 +1,10 @@
-import { recipes } from "../data/recipes.js";
+//import { recipes } from "../data/recipes.js";
+import {
+  addTag,
+  removeTag,
+  getSelectedTags,
+  determinedCategory,
+} from "./manageSelectedTags.js";
 import { renderRecipes, filterAndRenderRecipes } from "./index.js";
 
 // Get all types of filter tags
@@ -34,42 +40,16 @@ function getUstensils(recipes) {
   return Array.from(ustensilsList).sort();
 }
 
-// Init selected tags array
-const selectedTags = {
-  ingredients: [],
-  appliances: [],
-  ustensils: [],
-};
-
-// Category
-function determinedCategory(categoryName) {
-  const categorySelector = {
-    Ingredients: "ingredients",
-    Appliances: "appliances",
-    Ustensils: "ustensils",
-  };
-
-  return categorySelector[categoryName] || null;
-}
-
 function updateSelectedTags(category, tag, isSelected) {
   try {
     if (isSelected) {
-      // Add tag to the selectedTags
-      if (!selectedTags[category].includes(tag)) {
-        selectedTags[category].push(tag);
-        console.log("update selected tag", selectedTags);
-      }
+      addTag(category, tag);
     } else {
-      // Remove tag from selectedTags
-      const index = selectedTags[category].indexOf(tag);
-      if (index > -1) {
-        selectedTags[category].splice(index, 1);
-      }
+      removeTag(category, tag);
     }
+    filterAndRenderRecipes(); // Filter and render recipes update
   } catch (error) {
-    //console.log(error);
-    console.error("updateSelectedTags", category, tag, isSelected);
+    console.error("Error in updateSelectedTags:", error);
   }
 }
 
@@ -146,14 +126,14 @@ function createFilterMenu(categoryName, items, renderRecipes) {
     // Tag click event
     listItem.addEventListener("click", function () {
       const isSelected = this.classList.toggle("selected");
-      const category = determinedCategory(categoryName); // Determine category
-      updateSelectedTags(category, this.textContent, isSelected);
-
-      // Call createSelectedTagButton when a tag is selected
+      const category = determinedCategory(categoryName);
+      const tagText = this.textContent;
       if (isSelected) {
-        createSelectedTagButton(this.textContent, itemList);
+        addTag(category, tagText);
+        createSelectedTagButton(tagText, itemList); // Create selected tag button
+      } else {
+        removeTag(category, tagText);
       }
-
       filterAndRenderRecipes();
     });
     itemList.appendChild(listItem);
@@ -226,7 +206,6 @@ function createFilterMenu(categoryName, items, renderRecipes) {
     tagIcon.classList.toggle("rotate-icon");
     itemsList.style.display =
       itemsList.style.display === "none" ? "block" : "none";
-    console.log(selectedTags);
     console.log("rotated !!!");
   });
 
@@ -249,16 +228,13 @@ function createSelectedTagButton(tagName, itemList) {
   const icon = document.createElement("i");
   icon.classList.add("bi", "bi-x", "tag_close-icon"); // Remove icon
   tagButton.appendChild(icon);
-
   tagButton.classList.add("selected-tag-button");
 
-  // Event listener for click on icon
   icon.addEventListener("click", () => {
-    selectedTagsContainer.removeChild(tagButton);
-    hideSelectedTag(itemList);
+    removeSelectedTagButton(tagName, selectedTagsContainer);
   });
+
   selectedTagsContainer.appendChild(tagButton);
-  console.log(selectedTags);
 }
 
 // Function hide selected tag from list
@@ -283,15 +259,19 @@ function removeSelectedTagButton(tagName, container) {
     if (button.textContent === tagName) {
       container.removeChild(button);
 
+      // Find tag category
       const categories = ["ingredients", "appliances", "ustensils"];
-      for (let category of categories) {
-        const index = selectedTags[category].indexOf(tagName);
-        if (index > -1) {
-          selectedTags[category].splice(index, 1);
+      let categoryFound = null;
+      for (const category of categories) {
+        if (getSelectedTags()[category].includes(tagName)) {
+          categoryFound = category;
+          break;
         }
       }
-
-      filterAndRenderRecipes();
+      if (categoryFound) {
+        removeTag(categoryFound, tagName);
+        filterAndRenderRecipes();
+      }
     }
   }
 }
@@ -353,10 +333,4 @@ function filterRecipes(searchInput, recipes) {
   return filteredRecipes;
 }
 
-export {
-  getIngredients,
-  getAppliances,
-  getUstensils,
-  createFilterMenu,
-  selectedTags,
-};
+export { getIngredients, getAppliances, getUstensils, createFilterMenu };

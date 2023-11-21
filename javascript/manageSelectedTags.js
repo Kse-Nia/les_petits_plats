@@ -4,6 +4,16 @@ const selectedTags = {
   ustensils: [],
 };
 
+function determinedCategory(categoryName) {
+  const categoryMap = {
+    Ingredients: "ingredients",
+    Appliances: "appliances",
+    Ustensils: "ustensils",
+  };
+
+  return categoryMap[categoryName] || null;
+}
+
 function addTag(category, tag) {
   if (!selectedTags[category].includes(tag)) {
     selectedTags[category].push(tag);
@@ -22,17 +32,6 @@ function removeTag(category, tag) {
 function getSelectedTags() {
   console.log(selectedTags);
   return selectedTags;
-}
-
-function determinedCategory(tagName) {
-  if (selectedTags.ingredients.includes(tagName)) {
-    return "ingredients";
-  } else if (selectedTags.appliances.includes(tagName)) {
-    return "appliances";
-  } else if (selectedTags.ustensils.includes(tagName)) {
-    return "ustensils";
-  }
-  return null;
 }
 
 export { addTag, removeTag, getSelectedTags, determinedCategory };
