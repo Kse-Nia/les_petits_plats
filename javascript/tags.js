@@ -52,7 +52,7 @@ function updateSelectedTags(category, tag, isSelected) {
 }
 
 // DOM
-function createFilterMenu(categoryName, items, renderRecipes) {
+function createFilterMenu(categoryName, items) {
   const filtersTagContainer = document.querySelector(".filters-tags-container");
   const selectedTagsContainer = document.querySelector(
     ".selected-tags-container"
@@ -139,27 +139,27 @@ function createFilterMenu(categoryName, items, renderRecipes) {
 
   // Search input container
   const searchContainer = document.createElement("div");
-  searchContainer.classList.add("search-container");
+  searchContainer.classList.add("search-container", "d-flex");
 
   // Create search input
   const searchInput = document.createElement("input");
   searchInput.setAttribute("type", "text");
-  searchInput.classList.add("search-input");
-  searchInput.setAttribute("placeholder", "Search");
+  searchInput.classList.add("search-input", "p-2", "tags-search-input");
+  //searchInput.setAttribute("placeholder", "Search");
 
   // Append search input to the container
   searchContainer.appendChild(searchInput);
+
+  // Create search icon
+  const searchIcon = document.createElement("i");
+  searchIcon.classList.add("bi", "bi-search", "search-icon");
+  searchContainer.appendChild(searchIcon);
 
   // Create clear icon
   const clearIcon = document.createElement("i");
   clearIcon.classList.add("bi", "bi-x-lg", "clear-icon");
   clearIcon.style.visibility = "hidden"; // Hide initially
   searchContainer.appendChild(clearIcon);
-
-  // Create search icon
-  const searchIcon = document.createElement("i");
-  searchIcon.classList.add("bi", "bi-search", "search-icon");
-  searchContainer.appendChild(searchIcon);
 
   // Append the container to itemsList
   itemsList.appendChild(searchContainer);
@@ -206,7 +206,7 @@ function createFilterMenu(categoryName, items, renderRecipes) {
       itemsList.style.display === "none" ? "block" : "none";
   });
 
-  selectedTagsContainer.appendChild(categoryWrapper);
+  //selectedTagsContainer.appendChild(categoryWrapper);
 }
 
 // Selecting filter tags
@@ -225,7 +225,7 @@ function createSelectedTagButton(tagName, itemList) {
   const icon = document.createElement("i");
   icon.classList.add("bi", "bi-x", "tag_close-icon"); // Remove icon
   tagButton.appendChild(icon);
-  tagButton.classList.add("selected-tag-button");
+  tagButton.classList.add("selected-tag-button", "m-2");
 
   icon.addEventListener("click", () => {
     removeSelectedTagButton(tagName, selectedTagsContainer);
