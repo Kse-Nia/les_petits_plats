@@ -16,7 +16,6 @@ function getIngredients(recipes) {
       ingredientsSet.add(ingredient);
     }
   }
-  //console.log(Array.from(ingredientsSet).sort());
   return Array.from(ingredientsSet).sort(); // Convert set to array
 }
 
@@ -36,7 +35,6 @@ function getUstensils(recipes) {
       ustensilsList.add(recipes[i].ustensils[j].toLowerCase());
     }
   }
-  //console.log(Array.from(ustensilsList).sort());
   return Array.from(ustensilsList).sort();
 }
 
@@ -206,7 +204,6 @@ function createFilterMenu(categoryName, items, renderRecipes) {
     tagIcon.classList.toggle("rotate-icon");
     itemsList.style.display =
       itemsList.style.display === "none" ? "block" : "none";
-    console.log("rotated !!!");
   });
 
   selectedTagsContainer.appendChild(categoryWrapper);
