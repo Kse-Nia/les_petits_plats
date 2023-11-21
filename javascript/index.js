@@ -191,7 +191,24 @@ export function filterAndRenderRecipes() {
   const searchValue = document.querySelector(".searchbar").value.trim();
   const filteredRecipes = filterRecipes(searchValue, recipes);
   renderRecipes(filteredRecipes, searchValue);
+  updateRecipesQuantity(filteredRecipes); // Update displayed recipes number
 }
+
+// Display number recipes
+function getRecipesQuantity() {
+  const selectQuantity = document.querySelector(".recipes_quantity");
+  const initialQuantity = recipes.length;
+  selectQuantity.textContent = `${initialQuantity} recettes`;
+
+  // Function to update the displayed quantity
+  function updateRecipesQuantity(filteredRecipes) {
+    const quantity = filteredRecipes.length;
+    selectQuantity.textContent = `${quantity} recettes`;
+  }
+  updateRecipesQuantity(recipes);
+  return updateRecipesQuantity;
+}
+const updateRecipesQuantity = getRecipesQuantity();
 
 // Initialize the search functionality
 handleSearch(recipes);
