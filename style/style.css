@@ -45,7 +45,7 @@ h1 {
   font-size: 1rem;
 }
 .search_button svg path {
-  color: #ffffff;
+  color: #fff;
 }
 input:focus + .search_button {
   background-color: #ffd15b;
@@ -97,7 +97,7 @@ input:focus + .search_button {
 }
 .rotate-icon {
   transform: rotate(180deg);
-  transition: transform 0.5s ease;
+  transition: transform 0.5s;
 }
 .selected-tag-button {
   display: flex;
