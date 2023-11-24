@@ -144,7 +144,7 @@ function createFilterMenu(categoryName, items) {
   // Create search input
   const searchInput = document.createElement("input");
   searchInput.setAttribute("type", "text");
-  searchInput.classList.add("search-input", "p-2", "tags-search-input");
+  searchInput.classList.add("search-input", "m-2", "tags-search-input");
   //searchInput.setAttribute("placeholder", "Search");
 
   // Append search input to the container

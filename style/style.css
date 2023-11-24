@@ -36,6 +36,9 @@ h1 {
   font-size: 2.75rem;
   font-family: Anton;
 }
+main {
+  min-height: 40vh;
+}
 .form {
   width: 80vw;
   height: 5rem;
@@ -86,7 +89,6 @@ input:focus + .search_button {
   order: 1 !important;
   color: #7a7a7a !important;
 }
-
 .search-icon {
   order: 2 !important;
   right: 30px !important;
@@ -104,8 +106,13 @@ input:focus + .search_button {
   padding: 0 !important;
   width: 100%;
   max-height: 200px;
-  overflow: scroll;
+  /* overflow: scroll; */
+  overflow-y: auto;
 }
+.item-list::-webkit-scrollbar {
+  display: none;
+}
+
 .rotate-icon {
   transform: rotate(180deg);
   transition: transform 0.5s;
@@ -168,9 +175,18 @@ input:focus + .search_button {
   cursor: pointer;
   color: #191919;
 }
-
 .category_title {
   font-weight: 500;
   font-size: 1.5rem;
   color: #1b1b1b;
+}
+.recipes_error-message {
+  width: auto;
+  font-size: 1em;
+}
+
+.tags-search-input {
+  border: 1px solid #c6c6c6;
+  color: #c6c6c6 !important;
+  border-radius: 2px;
 }
