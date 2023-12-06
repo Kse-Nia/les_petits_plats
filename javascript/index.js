@@ -96,6 +96,7 @@ function addIngredients(cardBody, ingredients) {
   );
   cardBody.appendChild(ingredientsContainer);
 
+  console.time("ingredients");
   ingredients.forEach((ingredient) => {
     const ingredientDiv = document.createElement("div");
     ingredientDiv.classList.add("col-6");
@@ -113,6 +114,7 @@ function addIngredients(cardBody, ingredients) {
     ingredientDetails.textContent = text;
     ingredientDiv.appendChild(ingredientDetails);
   });
+  console.timeEnd("ingredients");
 }
 
 function truncateDescription(text, maxLength) {
@@ -123,10 +125,12 @@ function truncateDescription(text, maxLength) {
 function createCard(recipes) {
   const recipesLength = recipes.length;
 
+  console.time("cards");
   recipes.forEach((recipe) => {
     const card = createCardElements(recipe);
     recipesContainer.appendChild(card);
   });
+  console.timeEnd("cards");
 }
 createCard(recipes);
 
@@ -142,6 +146,7 @@ function handleSearch(recipes) {
 function filterRecipes(searchInput, recipes) {
   const selectedTags = getSelectedTags(); // Get selected tags
 
+  // Iterate over recipes and filter them
   const filteredRecipes = recipes.filter((recipe) => {
     const recipeName = recipe.name.toLowerCase();
     const recipeDescription = recipe.description.toLowerCase();
