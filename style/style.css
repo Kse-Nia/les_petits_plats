@@ -1,3 +1,12 @@
+*,
+header,
+ul {
+  margin: 0;
+}
+*,
+ul {
+  padding: 0;
+}
 .card-text-quantity,
 .recette,
 .search-input,
@@ -9,16 +18,12 @@
   color: #7a7a7a !important;
   position: absolute;
 }
-*,
-header {
-  margin: 0;
-}
+.selected-tags-list-container > ul,
 .time-overlay,
 input:focus + .search_button svg path {
   background-color: #ffd15b;
 }
 * {
-  padding: 0;
   box-sizing: border-box;
   text-decoration: none;
   list-style: none;
@@ -128,7 +133,7 @@ input:focus + .search_button {
 }
 .rotate-icon {
   transform: rotate(180deg);
-  transition: transform 0.3s ease;
+  transition: transform 0.3s;
 }
 .selected-tag-button {
   display: flex;
@@ -197,12 +202,4 @@ input:focus + .search_button {
   border: 1px solid #c6c6c6;
   color: #c6c6c6 !important;
   border-radius: 2px;
-}
-.selected-tags-list-container > ul{
-  background-color: #FFD15B;
- 
-}
-ul {
-  margin: 0;
-  padding: 0;
 }
