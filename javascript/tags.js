@@ -8,7 +8,7 @@ import { filterAndRenderRecipes } from "./index.js";
 
 // Get all types of filter tags
 function getIngredients(recipes) {
-  const ingredientsSet = new Set(); // Set to avoid ingredients duplicates
+  const ingredientsSet = new Set(); // Set to avoid duplicates
   for (let i = 0; i < recipes.length; i++) {
     for (let j = 0; j < recipes[i].ingredients.length; j++) {
       let ingredient = recipes[i].ingredients[j].ingredient.toLowerCase();
@@ -78,7 +78,11 @@ function createFilterMenu(categoryName, items) {
   // Create items list container
   const itemsList = document.createElement("div");
   itemsList.style.display = "none";
-  itemsList.classList.add("dropdown-content", "direction-column-reverse");
+  itemsList.classList.add(
+    "dropdown-content",
+    "direction-column-reverse",
+    `category-${categoryName.toLowerCase().split(" ").join("-")}`
+  );
 
   // Search input container
   const searchContainer = document.createElement("div");
@@ -106,7 +110,7 @@ function createFilterMenu(categoryName, items) {
 
   // Create items list
   const itemList = document.createElement("div");
-  itemList.classList.add("item-list", "order-2");
+  itemList.classList.add("item-list", "order-3");
   itemList.style.backgroundColor = categoryTitle.style.backgroundColor;
   itemsList.appendChild(itemList);
 
@@ -135,6 +139,7 @@ function createFilterMenu(categoryName, items) {
         removeTag(category, tagText);
       }
       filterAndRenderRecipes();
+      console.log(getSelectedTags());
     });
     itemList.appendChild(listItem);
   }
@@ -144,7 +149,6 @@ function createFilterMenu(categoryName, items) {
   clearInputSearch(searchInput, clearIcon, itemList);
 }
 
-// Display dropdown menu
 function displayDropdownMenu(
   categoryWrapper,
   tagIcon,
@@ -157,6 +161,35 @@ function displayDropdownMenu(
     if (!searchContainer.contains(e.target)) {
       itemsList.style.display =
         itemsList.style.display === "none" ? "block" : "none";
+    }
+
+    const selectedTags = getSelectedTags();
+    const categories = ["ingredients", "appliances", "ustensils"];
+    for (let category of categories) {
+      const dropdownContainer = document.querySelector(
+        `.dropdown-content.direction-column-reverse.category-${category
+          .toLowerCase()
+          .split(" ")
+          .join("-")}`
+      );
+
+      if (dropdownContainer) {
+        // Remove existing selected tags list to avoid repetition
+        const existingContainer = dropdownContainer.querySelector(
+          ".selected-tags-list-container"
+        );
+        if (existingContainer) {
+          dropdownContainer.removeChild(existingContainer);
+        }
+        // Create selected tags list container
+        const newSelectedTagsListContainer = createSelectedTagsListContainer(
+          category,
+          selectedTags
+        );
+        if (newSelectedTagsListContainer) {
+          dropdownContainer.appendChild(newSelectedTagsListContainer);
+        }
+      }
     }
   });
 }
@@ -249,65 +282,27 @@ function removeSelectedTagButton(tagName, container) {
   }
 }
 
-// Selected tags list container
-/* async function createSelectedListContainer(categoryName, selectedTags) {
-  const dropDownContainer = document.querySelector(".dropdown-content");
-
-  if (dropDownContainer) {
-    const selectedTagsDiv = document.createElement("div");
-    selectedTagsDiv.classList.add(
-      "selected-tags-list-container",
-      "d-flex",
-      "direction-column",
-    );
-    selectedTagsDiv.style.backgroundColor = "yellow";
-  
-    const categoryTags = selectedTags[categoryName];
-    for (let i = 0; i < categoryTags.length; i++) {
-      const tag = categoryTags[i];
-      const tagElement = document.createElement("span");
-      tagElement.textContent = tag;
-      selectedTagsDiv.appendChild(tagElement);
-    }
-  
-    console.log("categoryTags", categoryTags);
-    dropDownContainer.appendChild(selectedTagsDiv);
-  } else {
-    console.warn("Dropdown container not found");
+// Create selected tags list DOM
+function createSelectedTagsListContainer(category, selectedTags) {
+  // Check if there is at least one tag selected
+  if (!selectedTags[category] || selectedTags[category].length === 0) {
+    return null;
   }
-} */
-/* function createSelectedListContainer(categoryName, selectedTags) {
-  const dropdownContainer = document.querySelector(
-    `.dropdown-content-${categoryName}`
+  const selectedTagsListContainer = document.createElement("div");
+  selectedTagsListContainer.classList.add(
+    "selected-tags-list-container",
+    "order-2"
   );
-  if (!dropdownContainer) {
-    console.error(`Dropdown container for ${categoryName} not found`);
-    return;
+  const ulList = document.createElement("ul");
+  ulList.classList.add("selected-tags-list", "p-3");
+
+  for (let tag of selectedTags[category]) {
+    const li = document.createElement("li");
+    li.textContent = tag;
+    ulList.appendChild(li);
   }
-
-  // Clear any existing content in dropdownContainer
-  dropdownContainer.innerHTML = "";
-
-  // Create a container for the selected tags
-  const selectedTagsDiv = document.createElement("div");
-  selectedTagsDiv.classList.add(
-    "selected-tags-container",
-    "d-flex",
-    "flex-column"
-  );
-  dropdownContainer.appendChild(selectedTagsDiv);
-
-  // Add selected tags to the container
-  selectedTags[categoryName].forEach((tag) => {
-    const tagElement = document.createElement("span");
-    tagElement.textContent = tag;
-    tagElement.classList.add("selected-tag");
-    selectedTagsDiv.appendChild(tagElement);
-  });
+  selectedTagsListContainer.appendChild(ulList);
+  return selectedTagsListContainer;
 }
-const selectedTags = getSelectedTags();
-createSelectedListContainer("ingredients", selectedTags);
-createSelectedListContainer("appliances", selectedTags);
-createSelectedListContainer("ustensils", selectedTags); */
 
 export { getIngredients, getAppliances, getUstensils, createFilterMenu };
