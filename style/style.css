@@ -198,3 +198,11 @@ input:focus + .search_button {
   color: #c6c6c6 !important;
   border-radius: 2px;
 }
+.selected-tags-list-container > ul{
+  background-color: #FFD15B;
+ 
+}
+ul {
+  margin: 0;
+  padding: 0;
+}
