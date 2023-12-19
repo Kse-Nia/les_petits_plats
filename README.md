@@ -28,3 +28,6 @@ Pour lancer le projet sur votre machine locale, suivez ces étapes :
    ```
 
 2. Lancez live server
+
+Vous pouvez également trouver l'analyse des performances des deux versions du code dans le fichier PDF
+[ici](pdf/KM_algo_P8.pdf).
