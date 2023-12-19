@@ -112,7 +112,6 @@ function displayDropdownMenu(
     tagIcon.classList.toggle("rotate-icon");
     if (!searchContainer.contains(e.target)) {
       itemsList.style.display =
-       /*  itemsList.style.display === "none" ? "block" : "none"; */
        itemsList.style.display === "none" ? "flex" : "none";
     }
     const selectedTags = getSelectedTags();
