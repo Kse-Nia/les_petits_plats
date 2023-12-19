@@ -96,7 +96,6 @@ function createFilterMenu(categoryName, items) {
         removeTag(category, tagText);
       }
       filterAndRenderRecipes();
-      console.log(getSelectedTags());
     });
     itemList.appendChild(listItem);
   }
@@ -214,7 +213,6 @@ function createSelectedTagButton(tagName) {
 // Remove tag button
 function removeSelectedTagButton(tagName, container) {
   const selectedBtnTag = container.querySelectorAll(".selected-tag-button");
-
   for (let i = 0; i < selectedBtnTag.length; i++) {
     const button = selectedBtnTag[i];
     if (button.textContent === tagName) {
@@ -270,18 +268,8 @@ function createSelectedTagsListContainer(category, selectedTags, tagName) {
     li.appendChild(removeIcon);
 
     removeIcon.addEventListener("click", function () {
-      removeTag(category, tag);
-      li.parentNode.removeChild(li);
-
-      // Remove tag in filter menu
-      const tagButton = document.querySelector(
-        `.tag-button[data-tag="${tag}"]`
-      );
-      if (tagButton) {
-        tagButton.parentNode.removeChild(tagButton);
-      }
       removeSelectedTagInList(category, selectedTagsListContainer, tag);
-      removeSelectedTagButton(tagName, selectedTagsListContainer);
+      removeSelectedTagButton(tag, selectedTagsListContainer);
     });
   }
   selectedTagsListContainer.appendChild(ulList);
@@ -298,30 +286,35 @@ function removeSelectedTagInList(category, container, tagName) {
     if (tagElement.textContent.trim().split(" ")[0] === tagName) {
       tagElement.parentNode.removeChild(tagElement);
     }
-    const removeIcon = tagElement.querySelector("i");
     // Find tag category
     const categories = ["ingredients", "appliances", "ustensils"];
     let categoryFound = null;
+    for (const category of categories) {
+      if (getSelectedTags()[category].includes(tagName)) {
+        categoryFound = category;
+        break;
+      }
+    }
+    if (categoryFound) {
+      removeTag(categoryFound, tagName);
+      filterAndRenderRecipes();
 
-    removeIcon.addEventListener("click", function () {
-      const tag = tagElement.textContent.trim().split(" ")[0]; // Get tag name
-      tagElement.parentNode.removeChild(tagElement);
-
-      for (const category of categories) {
-        if (getSelectedTags()[category].includes(tagName)) {
-          categoryFound = category;
-          break;
+      // Remove related tag button
+      const selectedTagsContainer = document.querySelector(
+        ".selected-tags-container"
+      );
+      const selectedBtnTag = selectedTagsContainer.querySelectorAll(
+        ".selected-tag-button"
+      );
+      for (let i = 0; i < selectedBtnTag.length; i++) {
+        const button = selectedBtnTag[i];
+        if (button.textContent === tagName) {
+          selectedTagsContainer.removeChild(button);
         }
       }
-      if (categoryFound) {
-        removeTag(categoryFound, tagName);
-        filterAndRenderRecipes();
-      }
-    });
+    }
   }
 }
-
-  
 removeSelectedTagInList();
 
 export { getIngredients, getAppliances, getUstensils, createFilterMenu };
