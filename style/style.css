@@ -4,6 +4,11 @@
 .searchbar {
   color: #7a7a7a;
 }
+.clear-icon,
+.search-icon {
+  color: #7a7a7a !important;
+  position: absolute;
+}
 *,
 header {
   margin: 0;
@@ -71,51 +76,59 @@ input:focus + .search_button {
   right: 10px;
   padding: 10px 20px;
 }
-.dropdown-content {
-  background-color: #fff;
-  display: none;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  z-index: 1;
-  width: 100%;
+.search-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row-reverse;
 }
 .search-container,
 .wrapper-category {
   position: relative;
+  font-family: Manrope, sans-serif;
 }
 .clear-icon {
-  right: 5px !important;
-  order: 1 !important;
-  color: #7a7a7a !important;
+  right: 35px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.6rem;
 }
 .search-icon {
-  order: 2 !important;
-  right: 30px !important;
+  right: 15px;
   color: #7a7a7a !important;
+  height: calc(14px + 1vh);
+  font-size: 0.9rem;
 }
 .custom-margin {
   margin-left: 2rem;
 }
-.wrapper-category {
-  font-family: Manrope, sans-serif;
+.dropdown-content {
+  width: 100%;
+  background-color: #fff;
+  display: none;
+  position: absolute;
+  border-bottom-left-radius: 11px;
+  border-bottom-right-radius: 11px;
+  top: 100%;
+  left: 0;
+  z-index: 1;
 }
 .item-list {
-  background-color: #fff;
-  border: none;
-  padding: 0 !important;
   width: 100%;
   max-height: 200px;
-  /* overflow: scroll; */
+  padding: 0 !important;
+  background-color: #fff;
+  border: none;
+  border-bottom-left-radius: 11px;
+  border-bottom-right-radius: 11px;
   overflow-y: auto;
 }
 .item-list::-webkit-scrollbar {
   display: none;
 }
-
 .rotate-icon {
   transform: rotate(180deg);
-  transition: transform 0.5s;
+  transition: transform 0.3s ease;
 }
 .selected-tag-button {
   display: flex;
@@ -157,23 +170,19 @@ input:focus + .search_button {
 .btn.dropdown-toggle::after {
   display: none;
 }
-.search-input,
 .tag {
-  width: 100%;
   max-width: 100%;
-  padding-right: 30px;
+  padding-left: 10%;
 }
 .search-input {
   width: 100%;
+  min-height: calc(30px + 1vh);
   padding-right: 35px;
 }
-.clear-icon,
 .search-icon {
-  position: absolute;
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
-  color: #191919;
 }
 .category_title {
   font-weight: 500;
@@ -184,7 +193,6 @@ input:focus + .search_button {
   width: auto;
   font-size: 1em;
 }
-
 .tags-search-input {
   border: 1px solid #c6c6c6;
   color: #c6c6c6 !important;
