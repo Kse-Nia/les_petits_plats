@@ -1,11 +1,10 @@
-//import { recipes } from "../data/recipes.js";
 import {
   addTag,
   removeTag,
   getSelectedTags,
   determinedCategory,
 } from "./manageSelectedTags.js";
-import { renderRecipes, filterAndRenderRecipes } from "./index.js";
+import { filterAndRenderRecipes } from "./index.js";
 
 // Get all types of filter tags
 function getIngredients(recipes) {
@@ -38,25 +37,9 @@ function getUstensils(recipes) {
   return Array.from(ustensilsList).sort();
 }
 
-function updateSelectedTags(category, tag, isSelected) {
-  try {
-    if (isSelected) {
-      addTag(category, tag);
-    } else {
-      removeTag(category, tag);
-    }
-    filterAndRenderRecipes(); // Filter and render recipes update
-  } catch (error) {
-    console.error("Error in updateSelectedTags:", error);
-  }
-}
-
 // DOM
 function createFilterMenu(categoryName, items) {
   const filtersTagContainer = document.querySelector(".filters-tags-container");
-  const selectedTagsContainer = document.querySelector(
-    ".selected-tags-container"
-  );
 
   // Create category wrapper
   const categoryWrapper = document.createElement("div");
@@ -90,28 +73,47 @@ function createFilterMenu(categoryName, items) {
     "bi-2x"
   );
   categoryTitle.appendChild(tagIcon);
-
   categoryWrapper.appendChild(categoryTitle);
 
   // Create items list container
   const itemsList = document.createElement("div");
   itemsList.style.display = "none";
-  itemsList.classList.add(
-    "dropdown-content",
-    "flex",
-    "direction-column-reverse"
-  );
+  itemsList.classList.add("dropdown-content", "direction-column-reverse");
+
+  // Search input container
+  const searchContainer = document.createElement("div");
+  searchContainer.classList.add("search-container", "d-flex", "order-1");
+
+  // Create search input
+  const searchInput = document.createElement("input");
+  searchInput.setAttribute("type", "text");
+  searchInput.classList.add("search-input", "m-2", "p-1", "tags-search-input");
+  searchContainer.appendChild(searchInput);
+
+  // Create clear icon
+  const clearIcon = document.createElement("i");
+  clearIcon.classList.add("bi", "bi-x-lg", "clear-icon");
+  clearIcon.style.visibility = "hidden"; // Hide initially
+  searchContainer.appendChild(clearIcon);
+
+  // Create search icon
+  const searchIcon = document.createElement("i");
+  searchIcon.classList.add("bi", "bi-search", "search-icon");
+  searchContainer.appendChild(searchIcon);
+
+  // Append the container to itemsList
+  itemsList.appendChild(searchContainer);
 
   // Create items list
   const itemList = document.createElement("div");
-  itemList.classList.add("item-list");
+  itemList.classList.add("item-list", "order-2");
   itemList.style.backgroundColor = categoryTitle.style.backgroundColor;
   itemsList.appendChild(itemList);
 
   categoryWrapper.appendChild(itemsList);
   filtersTagContainer.appendChild(categoryWrapper);
 
-  // Populate items list
+  // Create items list
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
     const listItem = document.createElement("div");
@@ -137,35 +139,45 @@ function createFilterMenu(categoryName, items) {
     itemList.appendChild(listItem);
   }
 
-  // Search input container
-  const searchContainer = document.createElement("div");
-  searchContainer.classList.add("search-container", "d-flex");
+  displayDropdownMenu(categoryWrapper, tagIcon, searchContainer, itemsList);
+  handleSearchInput(searchInput, itemList, clearIcon);
+  clearInputSearch(searchInput, clearIcon, itemList);
+}
 
-  // Create search input
-  const searchInput = document.createElement("input");
-  searchInput.setAttribute("type", "text");
-  searchInput.classList.add("search-input", "m-2", "tags-search-input");
-  //searchInput.setAttribute("placeholder", "Search");
+// Display dropdown menu
+function displayDropdownMenu(
+  categoryWrapper,
+  tagIcon,
+  searchContainer,
+  itemsList
+) {
+  categoryWrapper.style.display = "flex";
+  categoryWrapper.addEventListener("click", (e) => {
+    tagIcon.classList.toggle("rotate-icon");
+    if (!searchContainer.contains(e.target)) {
+      itemsList.style.display =
+        itemsList.style.display === "none" ? "block" : "none";
+    }
+  });
+}
 
-  // Append search input to the container
-  searchContainer.appendChild(searchInput);
+// Clearing search input if clicked clear icon
+function clearInputSearch(searchInput, clearIcon, itemList) {
+  clearIcon.addEventListener("click", (e) => {
+    searchInput.value = "";
+    clearIcon.style.visibility = "hidden";
 
-  // Create search icon
-  const searchIcon = document.createElement("i");
-  searchIcon.classList.add("bi", "bi-search", "search-icon");
-  searchContainer.appendChild(searchIcon);
+    const listItems = itemList.getElementsByClassName("tag");
+    for (let i = 0; i < listItems.length; i++) {
+      listItems[i].style.display = "block";
+    }
+    e.stopPropagation();
+  });
+}
 
-  // Create clear icon
-  const clearIcon = document.createElement("i");
-  clearIcon.classList.add("bi", "bi-x-lg", "clear-icon");
-  clearIcon.style.visibility = "hidden"; // Hide initially
-  searchContainer.appendChild(clearIcon);
-
-  // Append the container to itemsList
-  itemsList.appendChild(searchContainer);
-
-  // Search input event listener
-  searchInput.addEventListener("input", () => {
+// Search input
+function handleSearchInput(searchInput, itemList, clearIcon) {
+  searchInput.addEventListener("input", (e) => {
     const searchValue = searchInput.value.toLowerCase();
     const listItems = itemList.getElementsByClassName("tag");
     clearIcon.style.visibility =
@@ -187,64 +199,28 @@ function createFilterMenu(categoryName, items) {
       }
     }
   });
-
-  // Clearing search input if clicked clear icon
-  clearIcon.addEventListener("click", () => {
-    searchInput.value = "";
-    clearIcon.style.visibility = "hidden";
-
-    const listItems = itemList.getElementsByClassName("tag");
-    for (let i = 0; i < listItems.length; i++) {
-      listItems[i].style.display = "block";
-    }
-  });
-
-  // Category title click event (toggle dropdown)
-  categoryTitle.addEventListener("click", () => {
-    tagIcon.classList.toggle("rotate-icon");
-    itemsList.style.display =
-      itemsList.style.display === "none" ? "block" : "none";
-  });
-
-  //selectedTagsContainer.appendChild(categoryWrapper);
 }
 
 // Selecting filter tags
-function createSelectedTagButton(tagName, itemList) {
+function createSelectedTagButton(tagName) {
   const selectedTagsContainer = document.querySelector(
     ".selected-tags-container"
   );
-
   const tagButton = document.createElement("button");
-  // Create a span element for name
   const span = document.createElement("span");
   span.textContent = tagName;
   tagButton.appendChild(span);
 
   // Add remove icon
   const icon = document.createElement("i");
-  icon.classList.add("bi", "bi-x", "tag_close-icon"); // Remove icon
+  icon.classList.add("bi", "bi-x", "tag_close-icon");
   tagButton.appendChild(icon);
   tagButton.classList.add("selected-tag-button", "m-2");
 
   icon.addEventListener("click", () => {
     removeSelectedTagButton(tagName, selectedTagsContainer);
   });
-
   selectedTagsContainer.appendChild(tagButton);
-}
-
-// Function hide selected tag from list
-function hideSelectedTag(itemList) {
-  const items = itemList.querySelectorAll(".tag");
-  for (let i = 0; i < items.length; i++) {
-    const item = items[i];
-    if (item.getAttribute("tag-selected") === "true") {
-      item.style.display = "none";
-    } else {
-      item.style.display = "block";
-    }
-  }
 }
 
 // Remove tag button
@@ -273,61 +249,65 @@ function removeSelectedTagButton(tagName, container) {
   }
 }
 
-// Remove tag button
-function filterRecipes(searchInput, recipes) {
-  const filteredRecipes = [];
-  for (let i = 0; i < recipes.length; i++) {
-    const recipe = recipes[i];
-    const recipeName = recipe.name.toLowerCase();
-    const recipeDescription = recipe.description.toLowerCase();
+// Selected tags list container
+/* async function createSelectedListContainer(categoryName, selectedTags) {
+  const dropDownContainer = document.querySelector(".dropdown-content");
 
-    const matchesSearchInput =
-      searchInput.length < 3 ||
-      recipeName.includes(searchInput.toLowerCase()) ||
-      recipeDescription.includes(searchInput.toLowerCase());
-
-    let matchesTags = true;
-
-    for (const [category, tags] of Object.entries(selectedTags)) {
-      if (tags.length === 0) continue;
-
-      let categoryMatch = false;
-
-      if (category === "ingredients") {
-        for (const tag of tags) {
-          categoryMatch = recipe.ingredients.some(
-            (ingredient) =>
-              ingredient.ingredient.toLowerCase() === tag.toLowerCase()
-          );
-          if (!categoryMatch) break;
-        }
-      } else if (category === "appliances") {
-        for (const tag of tags) {
-          if (recipe.appliance.toLowerCase() === tag.toLowerCase()) {
-            categoryMatch = true;
-          } else {
-            categoryMatch = false;
-            break;
-          }
-        }
-      } else if (category === "ustensils") {
-        for (const tag of tags) {
-          categoryMatch = recipe.ustensils.some(
-            (ustensil) => ustensil.toLowerCase() === tag.toLowerCase()
-          );
-          if (!categoryMatch) break;
-        }
-      }
-      if (!categoryMatch) {
-        matchesTags = false;
-        break;
-      }
+  if (dropDownContainer) {
+    const selectedTagsDiv = document.createElement("div");
+    selectedTagsDiv.classList.add(
+      "selected-tags-list-container",
+      "d-flex",
+      "direction-column",
+    );
+    selectedTagsDiv.style.backgroundColor = "yellow";
+  
+    const categoryTags = selectedTags[categoryName];
+    for (let i = 0; i < categoryTags.length; i++) {
+      const tag = categoryTags[i];
+      const tagElement = document.createElement("span");
+      tagElement.textContent = tag;
+      selectedTagsDiv.appendChild(tagElement);
     }
-    if (matchesSearchInput && matchesTags) {
-      filteredRecipes.push(recipe);
-    }
+  
+    console.log("categoryTags", categoryTags);
+    dropDownContainer.appendChild(selectedTagsDiv);
+  } else {
+    console.warn("Dropdown container not found");
   }
-  return filteredRecipes;
+} */
+/* function createSelectedListContainer(categoryName, selectedTags) {
+  const dropdownContainer = document.querySelector(
+    `.dropdown-content-${categoryName}`
+  );
+  if (!dropdownContainer) {
+    console.error(`Dropdown container for ${categoryName} not found`);
+    return;
+  }
+
+  // Clear any existing content in dropdownContainer
+  dropdownContainer.innerHTML = "";
+
+  // Create a container for the selected tags
+  const selectedTagsDiv = document.createElement("div");
+  selectedTagsDiv.classList.add(
+    "selected-tags-container",
+    "d-flex",
+    "flex-column"
+  );
+  dropdownContainer.appendChild(selectedTagsDiv);
+
+  // Add selected tags to the container
+  selectedTags[categoryName].forEach((tag) => {
+    const tagElement = document.createElement("span");
+    tagElement.textContent = tag;
+    tagElement.classList.add("selected-tag");
+    selectedTagsDiv.appendChild(tagElement);
+  });
 }
+const selectedTags = getSelectedTags();
+createSelectedListContainer("ingredients", selectedTags);
+createSelectedListContainer("appliances", selectedTags);
+createSelectedListContainer("ustensils", selectedTags); */
 
 export { getIngredients, getAppliances, getUstensils, createFilterMenu };

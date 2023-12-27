@@ -5,12 +5,11 @@ const selectedTags = {
 };
 
 function determinedCategory(categoryName) {
-  const categoryMap = {
-    Ingredients: "ingredients",
-    Appliances: "appliances",
-    Ustensils: "ustensils",
-  };
-  return categoryMap[categoryName] || null;
+  const lowerCaseCategoryName = categoryName.toLowerCase();
+  // Check if category name is in selectedTags
+  return selectedTags.hasOwnProperty(lowerCaseCategoryName)
+    ? lowerCaseCategoryName
+    : null;
 }
 
 function addTag(category, tag) {

@@ -142,7 +142,8 @@ function handleSearch(recipes) {
 
 function filterRecipes(searchInput, recipes) {
   const selectedTags = getSelectedTags(); // Get selected tags
-  const filteredRecipes = [];
+  const filteredRecipes = []; 
+  
   for (let i = 0; i < recipes.length; i++) {
     const recipe = recipes[i];
     const recipeName = recipe.name.toLowerCase();
@@ -197,7 +198,10 @@ function filterRecipes(searchInput, recipes) {
 
 export function renderRecipes(filteredRecipes, searchInput) {
   const recipesContainer = document.querySelector("#recipes");
-  recipesContainer.innerHTML = ""; // Clear recipes
+  const selectedTags = getSelectedTags();
+  const selectedTagsArray = Object.values(selectedTags).flat(); // Convert to array
+  const searchTypeOutput = searchInput || selectedTagsArray.join(', ');
+  recipesContainer.textContent = ""; // Clear recipes
 
   if (filteredRecipes.length === 0) {
     // No matched recipes -> display message for no result
@@ -208,8 +212,8 @@ export function renderRecipes(filteredRecipes, searchInput) {
       "text-center",
       "recipes_error-message"
     );
-    noRecipesMessage.textContent = `Aucune recette ne contient '${searchInput}', vous pouvez chercher "tarte aux pommes", "poisson", etc.`;
-    recipesContainer.appendChild(noRecipesMessage);
+   noRecipesMessage.textContent = `Aucune recette ne contient '${searchTypeOutput}', vous pouvez chercher "tarte aux pommes", "poisson", etc.`
+   recipesContainer.appendChild(noRecipesMessage);
   } else {
     createCard(filteredRecipes);
   }
