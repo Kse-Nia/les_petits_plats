@@ -8,32 +8,30 @@ import { filterAndRenderRecipes } from "./index.js";
 
 // Get all types of filter tags
 function getIngredients(recipes) {
-  const ingredientsSet = new Set(); // Set to avoid ingredients duplicates
-  for (let i = 0; i < recipes.length; i++) {
-    for (let j = 0; j < recipes[i].ingredients.length; j++) {
-      let ingredient = recipes[i].ingredients[j].ingredient.toLowerCase();
-      ingredientsSet.add(ingredient);
-    }
-  }
-  return Array.from(ingredientsSet).sort(); // Convert set to array
+  const ingredientsList = new Set(); // Set to avoid duplicates
+  recipes.forEach((recipe) => {
+    recipe.ingredients.forEach((ingredient) => {
+      ingredientsList.add(ingredient.ingredient.toLowerCase());
+    });
+  });
+  return Array.from(ingredientsList).sort(); // Convert set to array
 }
 
 function getAppliances(recipes) {
-  const appliancesSet = new Set();
-  for (let i = 0; i < recipes.length; i++) {
-    let appliance = recipes[i].appliance.toLowerCase();
-    appliancesSet.add(appliance);
-  }
-  return Array.from(appliancesSet).sort();
+  const appliancesList = new Set();
+  recipes.forEach((recipe) => {
+    appliancesList.add(recipe.appliance.toLowerCase());
+  });
+  return Array.from(appliancesList).sort();
 }
 
 function getUstensils(recipes) {
   const ustensilsList = new Set();
-  for (let i = 0; i < recipes.length; i++) {
-    for (let j = 0; j < recipes[i].ustensils.length; j++) {
-      ustensilsList.add(recipes[i].ustensils[j].toLowerCase());
-    }
-  }
+  recipes.forEach((recipe) => {
+    recipe.ustensils.forEach((ustensil) => {
+      ustensilsList.add(ustensil.toLowerCase());
+    });
+  });
   return Array.from(ustensilsList).sort();
 }
 
@@ -114,8 +112,7 @@ function createFilterMenu(categoryName, items) {
   filtersTagContainer.appendChild(categoryWrapper);
 
   // Create items list
-  for (let i = 0; i < items.length; i++) {
-    const item = items[i];
+  items.forEach((item) => {
     const listItem = document.createElement("div");
     listItem.classList.add("tag");
 
@@ -137,7 +134,7 @@ function createFilterMenu(categoryName, items) {
       filterAndRenderRecipes();
     });
     itemList.appendChild(listItem);
-  }
+  });
 
   displayDropdownMenu(categoryWrapper, tagIcon, searchContainer, itemsList);
   handleSearchInput(searchInput, itemList, clearIcon);
@@ -167,11 +164,11 @@ function clearInputSearch(searchInput, clearIcon, itemList) {
     searchInput.value = "";
     clearIcon.style.visibility = "hidden";
 
-    const listItems = itemList.getElementsByClassName("tag");
-    for (let i = 0; i < listItems.length; i++) {
-      listItems[i].style.display = "block";
-    }
-    e.stopPropagation();
+    const listItems = Array.from(itemList.getElementsByClassName("tag"));
+    listItems.forEach((item) => {
+      item.style.display = "block";
+    });
+     e.stopPropagation();
   });
 }
 
@@ -179,24 +176,24 @@ function clearInputSearch(searchInput, clearIcon, itemList) {
 function handleSearchInput(searchInput, itemList, clearIcon) {
   searchInput.addEventListener("input", (e) => {
     const searchValue = searchInput.value.toLowerCase();
-    const listItems = itemList.getElementsByClassName("tag");
+    const listItems = Array.from(itemList.getElementsByClassName("tag"));
     clearIcon.style.visibility =
       searchInput.value.length > 0 ? "visible" : "hidden";
 
     // Search with at least 3 letters
     if (searchValue.length >= 3) {
-      for (let i = 0; i < listItems.length; i++) {
-        const textValue = listItems[i].textContent.toLowerCase();
+      listItems.forEach((item) => {
+        const textValue = item.textContent.toLowerCase();
         if (textValue.includes(searchValue)) {
-          listItems[i].style.display = "block";
+          item.style.display = "block";
         } else {
-          listItems[i].style.display = "none";
+          item.style.display = "none";
         }
-      }
+      });
     } else {
-      for (let i = 0; i < listItems.length; i++) {
-        listItems[i].style.display = "block";
-      }
+      listItems.forEach((item) => {
+        item.style.display = "block";
+      });
     }
   });
 }
@@ -227,26 +224,22 @@ function createSelectedTagButton(tagName) {
 function removeSelectedTagButton(tagName, container) {
   const selectedBtnTag = container.querySelectorAll(".selected-tag-button");
 
-  for (let i = 0; i < selectedBtnTag.length; i++) {
-    const button = selectedBtnTag[i];
+  selectedBtnTag.forEach((button) => {
     if (button.textContent === tagName) {
       container.removeChild(button);
 
       // Find tag category
       const categories = ["ingredients", "appliances", "ustensils"];
-      let categoryFound = null;
-      for (const category of categories) {
-        if (getSelectedTags()[category].includes(tagName)) {
-          categoryFound = category;
-          break;
-        }
-      }
+      const categoryFound = categories.find((category) =>
+        getSelectedTags()[category].includes(tagName)
+      );
+
       if (categoryFound) {
         removeTag(categoryFound, tagName);
         filterAndRenderRecipes();
       }
     }
-  }
+  });
 }
 
 // Selected tags list container
