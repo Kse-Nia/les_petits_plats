@@ -4,7 +4,7 @@ import {
   getSelectedTags,
   determinedCategory,
 } from "./manageSelectedTags.js";
-import { filterAndRenderRecipes } from "./index.js";
+import { filterRecipes, filterAndRenderRecipes } from "./index.js";
 import {
   createCategoryWrapper,
   createCategoryTitle,
@@ -74,6 +74,7 @@ function createFilterMenu(categoryName, items) {
   categoryWrapper.appendChild(itemsList);
   filtersTagContainer.appendChild(categoryWrapper);
 
+  console.log;
   // Create list of tags items
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
@@ -115,7 +116,7 @@ function displayDropdownMenu(
     tagIcon.classList.toggle("rotate-icon");
     if (!searchContainer.contains(e.target)) {
       itemsList.style.display =
-       itemsList.style.display === "none" ? "flex" : "none";
+        itemsList.style.display === "none" ? "flex" : "none";
     }
     const selectedTags = getSelectedTags();
     const categories = ["ingredients", "appliances", "ustensils"];

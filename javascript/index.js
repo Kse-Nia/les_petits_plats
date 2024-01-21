@@ -10,6 +10,7 @@ import { getSelectedTags } from "./manageSelectedTags.js";
 // Global variables
 const recipesContainer = document.querySelector("#recipes");
 const folderPictures = "assets/photos/";
+let globalFilteredRecipes = [];
 
 function createCardElements(recipe) {
   const card = document.createElement("div");
@@ -140,7 +141,7 @@ function handleSearch(recipes) {
   }
 }
 
-function filterRecipes(searchInput, recipes) {
+export function filterRecipes(searchInput = '', recipes = []) {
   const selectedTags = getSelectedTags(); // Get selected tags
   const filteredRecipes = []; 
   
@@ -193,6 +194,7 @@ function filterRecipes(searchInput, recipes) {
       filteredRecipes.push(recipe);
     }
   }
+  console.log(filteredRecipes);
   return filteredRecipes;
 }
 
