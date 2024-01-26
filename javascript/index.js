@@ -141,10 +141,10 @@ function handleSearch(recipes) {
   }
 }
 
-export function filterRecipes(searchInput = '', recipes = []) {
+export function filterRecipes(searchInput = "", recipes = []) {
   const selectedTags = getSelectedTags(); // Get selected tags
-  const filteredRecipes = []; 
-  
+  const filteredRecipes = [];
+
   for (let i = 0; i < recipes.length; i++) {
     const recipe = recipes[i];
     const recipeName = recipe.name.toLowerCase();
@@ -194,7 +194,7 @@ export function filterRecipes(searchInput = '', recipes = []) {
       filteredRecipes.push(recipe);
     }
   }
-  console.log(filteredRecipes);
+  //console.log(filteredRecipes);
   return filteredRecipes;
 }
 
@@ -202,7 +202,7 @@ export function renderRecipes(filteredRecipes, searchInput) {
   const recipesContainer = document.querySelector("#recipes");
   const selectedTags = getSelectedTags();
   const selectedTagsArray = Object.values(selectedTags).flat(); // Convert to array
-  const searchTypeOutput = searchInput || selectedTagsArray.join(', ');
+  const searchTypeOutput = searchInput || selectedTagsArray.join(", ");
   recipesContainer.textContent = ""; // Clear recipes
 
   if (filteredRecipes.length === 0) {
@@ -214,19 +214,36 @@ export function renderRecipes(filteredRecipes, searchInput) {
       "text-center",
       "recipes_error-message"
     );
-   noRecipesMessage.textContent = `Aucune recette ne contient '${searchTypeOutput}', vous pouvez chercher "tarte aux pommes", "poisson", etc.`
-   recipesContainer.appendChild(noRecipesMessage);
+    noRecipesMessage.textContent = `Aucune recette ne contient '${searchTypeOutput}', vous pouvez chercher "tarte aux pommes", "poisson", etc.`;
+    recipesContainer.appendChild(noRecipesMessage);
   } else {
     createCard(filteredRecipes);
   }
 }
 
-export function filterAndRenderRecipes() {
+/*  export function filterAndRenderRecipes() {
   const searchValue = document.querySelector(".searchbar").value.trim();
   const filteredRecipes = filterRecipes(searchValue, recipes);
   renderRecipes(filteredRecipes, searchValue);
   updateRecipesQuantity(filteredRecipes); // Update displayed recipes number
-}
+}  */
+
+ export function filterAndRenderRecipes() {
+  const searchValue = document.querySelector(".searchbar").value.trim();
+  globalFilteredRecipes = filterRecipes(searchValue, recipes);
+  renderRecipes(globalFilteredRecipes, searchValue);
+  updateRecipesQuantity(globalFilteredRecipes);
+
+  // Mise à jour des listes de filtres
+  const filteredIngredients = getIngredients(recipes, globalFilteredRecipes);
+  const filteredAppliances = getAppliances(recipes, globalFilteredRecipes);
+  const filteredUstensils = getUstensils(recipes, globalFilteredRecipes);
+
+  // Mise à jour des menus de filtres avec les nouvelles listes
+  createFilterMenu("Ingredients", filteredIngredients);
+  createFilterMenu("Appliances", filteredAppliances);
+  createFilterMenu("Ustensils", filteredUstensils);
+} 
 
 // Display number recipes
 function getRecipesQuantity() {
@@ -250,7 +267,7 @@ handleSearch(recipes);
 // Manage tags and rendering
 const uniqueIngredients = getIngredients(recipes);
 const uniqueAppliances = getAppliances(recipes);
-const uniqueUstensils = getUstensils(recipes);
+const uniqueUstensils = getUstensils(recipes); 
 
 // Add tags to the DOM
 createFilterMenu("Ingredients", uniqueIngredients, renderRecipes);

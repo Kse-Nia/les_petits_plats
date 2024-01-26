@@ -4,7 +4,7 @@ import {
   getSelectedTags,
   determinedCategory,
 } from "./manageSelectedTags.js";
-import { filterRecipes, filterAndRenderRecipes } from "./index.js";
+import { filterAndRenderRecipes } from "./index.js";
 import {
   createCategoryWrapper,
   createCategoryTitle,
@@ -18,39 +18,56 @@ import {
 } from "../templates/tagsTemplates.js";
 
 // Get all types of filter tags
-function getIngredients(recipes) {
-  const ingredientsSet = new Set(); // Set to avoid duplicates
-  for (let i = 0; i < recipes.length; i++) {
-    for (let j = 0; j < recipes[i].ingredients.length; j++) {
-      let ingredient = recipes[i].ingredients[j].ingredient.toLowerCase();
+function getIngredients(recipes, filteredRecipes) {
+  const ingredientsSet = new Set();
+
+  // Utiliser toutes les recettes si filteredRecipes est undefined ou vide
+  const recipesToUse =
+    filteredRecipes && filteredRecipes.length > 0 ? filteredRecipes : recipes;
+  for (let i = 0; i < recipesToUse.length; i++) {
+    const recipe = recipesToUse[i];
+    for (let j = 0; j < recipe.ingredients.length; j++) {
+      let ingredient = recipe.ingredients[j].ingredient.toLowerCase();
       ingredientsSet.add(ingredient);
     }
   }
-  return Array.from(ingredientsSet).sort(); // Convert set to array
+  return Array.from(ingredientsSet).sort();
 }
 
-function getAppliances(recipes) {
+function getAppliances(recipes, filteredRecipes) {
   const appliancesSet = new Set();
-  for (let i = 0; i < recipes.length; i++) {
-    let appliance = recipes[i].appliance.toLowerCase();
+  const recipesToUse =
+    filteredRecipes && filteredRecipes.length > 0 ? filteredRecipes : recipes;
+  for (let i = 0; i < recipesToUse.length; i++) {
+    let appliance = recipesToUse[i].appliance.toLowerCase();
     appliancesSet.add(appliance);
   }
   return Array.from(appliancesSet).sort();
 }
 
-function getUstensils(recipes) {
+function getUstensils(recipes, filteredRecipes) {
   const ustensilsList = new Set();
-  for (let i = 0; i < recipes.length; i++) {
-    for (let j = 0; j < recipes[i].ustensils.length; j++) {
-      ustensilsList.add(recipes[i].ustensils[j].toLowerCase());
+  const recipesToUse =
+    filteredRecipes && filteredRecipes.length > 0 ? filteredRecipes : recipes;
+  for (let i = 0; i < recipesToUse.length; i++) {
+    for (let j = 0; j < recipesToUse[i].ustensils.length; j++) {
+      ustensilsList.add(recipesToUse[i].ustensils[j].toLowerCase());
     }
   }
   return Array.from(ustensilsList).sort();
 }
 
-// DOM
+// Stock wrapper in order to reuse it later
+let categoryWrappers = {};
+
 function createFilterMenu(categoryName, items) {
-  // Create DOM elements
+  // If the menu already exists, update it
+  if (categoryWrappers[categoryName]) {
+    updateFilterMenu(categoryName, items);
+    return;
+  }
+
+  // Créez le menu de filtres pour cette catégorie
   const filtersTagContainer = document.querySelector(".filters-tags-container");
   const categoryWrapper = createCategoryWrapper(categoryName);
   const categoryTitle = createCategoryTitle(categoryName);
@@ -74,8 +91,25 @@ function createFilterMenu(categoryName, items) {
   categoryWrapper.appendChild(itemsList);
   filtersTagContainer.appendChild(categoryWrapper);
 
-  console.log;
-  // Create list of tags items
+  categoryWrappers[categoryName] = { categoryWrapper, itemList }; // Stock wrapper in order to reuse it later
+
+  // Create list items
+  updateFilterMenu(categoryName, items);
+
+  displayDropdownMenu(categoryWrapper, tagIcon, searchContainer, itemsList);
+  handleSearchInput(searchInput, itemList, clearIcon);
+  clearInputSearch(searchInput, clearIcon, itemList);
+}
+
+function updateFilterMenu(categoryName, items) {
+  const { categoryWrapper, itemList } = categoryWrappers[categoryName];
+
+  // Remove existing items to avoid repetition
+  while (itemList.firstChild) {
+    itemList.removeChild(itemList.firstChild);
+  }
+
+  // Add new items
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
     const listItem = document.createElement("div");
@@ -100,9 +134,6 @@ function createFilterMenu(categoryName, items) {
     });
     itemList.appendChild(listItem);
   }
-  displayDropdownMenu(categoryWrapper, tagIcon, searchContainer, itemsList);
-  handleSearchInput(searchInput, itemList, clearIcon);
-  clearInputSearch(searchInput, clearIcon, itemList);
 }
 
 function displayDropdownMenu(
