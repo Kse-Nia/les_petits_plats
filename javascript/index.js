@@ -221,13 +221,6 @@ export function renderRecipes(filteredRecipes, searchInput) {
   }
 }
 
-/*  export function filterAndRenderRecipes() {
-  const searchValue = document.querySelector(".searchbar").value.trim();
-  const filteredRecipes = filterRecipes(searchValue, recipes);
-  renderRecipes(filteredRecipes, searchValue);
-  updateRecipesQuantity(filteredRecipes); // Update displayed recipes number
-}  */
-
  export function filterAndRenderRecipes() {
   const searchValue = document.querySelector(".searchbar").value.trim();
   globalFilteredRecipes = filterRecipes(searchValue, recipes);
