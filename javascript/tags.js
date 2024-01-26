@@ -17,37 +17,52 @@ import {
   createSearchIcon,
 } from "../templates/tagsTemplates.js";
 // Get all types of filter tags
-function getIngredients(recipes) {
-  const ingredientsList = new Set(); // Set to avoid duplicates
-  recipes.forEach((recipe) => {
+function getIngredients(recipes, filteredRecipes) {
+  const ingredientsSet = new Set();
+  const recipesToUse =
+    filteredRecipes && filteredRecipes.length > 0 ? filteredRecipes : recipes; // If there is filtered recipes, use them instead of all recipes
+
+  recipesToUse.forEach((recipe) => {
     recipe.ingredients.forEach((ingredient) => {
-      ingredientsList.add(ingredient.ingredient.toLowerCase());
+      ingredientsSet.add(ingredient.ingredient.toLowerCase());
     });
   });
-  return Array.from(ingredientsList).sort(); // Convert set to array
+  return Array.from(ingredientsSet).sort();
 }
 
-function getAppliances(recipes) {
-  const appliancesList = new Set();
-  recipes.forEach((recipe) => {
-    appliancesList.add(recipe.appliance.toLowerCase());
+function getAppliances(recipes, filteredRecipes) {
+  const appliancesSet = new Set();
+  const recipesToUse =
+    filteredRecipes && filteredRecipes.length > 0 ? filteredRecipes : recipes;
+  recipesToUse.forEach((recipe) => {
+    appliancesSet.add(recipe.appliance.toLowerCase());
   });
-  return Array.from(appliancesList).sort();
+  return Array.from(appliancesSet).sort();
 }
 
-function getUstensils(recipes) {
-  const ustensilsList = new Set();
-  recipes.forEach((recipe) => {
+function getUstensils(recipes, filteredRecipes) {
+  const ustensilsSet = new Set();
+  const recipesToUse =
+    filteredRecipes && filteredRecipes.length > 0 ? filteredRecipes : recipes;
+  recipesToUse.forEach((recipe) => {
     recipe.ustensils.forEach((ustensil) => {
-      ustensilsList.add(ustensil.toLowerCase());
+      ustensilsSet.add(ustensil.toLowerCase());
     });
   });
-  return Array.from(ustensilsList).sort();
+  return Array.from(ustensilsSet).sort();
 }
 
-// DOM
+// DOM elements
+let categoryWrappers = {}; // Stock wrapper in order to reuse it later
+
 function createFilterMenu(categoryName, items) {
-  // Create DOM elements
+  // If the menu already exists, update it
+  if (categoryWrappers[categoryName]) {
+    updateFilterMenu(categoryName, items);
+    return;
+  }
+
+  // Filters creation
   const filtersTagContainer = document.querySelector(".filters-tags-container");
   const categoryWrapper = createCategoryWrapper(categoryName);
   const categoryTitle = createCategoryTitle(categoryName);
@@ -71,8 +86,25 @@ function createFilterMenu(categoryName, items) {
   categoryWrapper.appendChild(itemsList);
   filtersTagContainer.appendChild(categoryWrapper);
 
-  // Create items list
-  items.forEach((item) => {
+  categoryWrappers[categoryName] = { categoryWrapper, itemList }; // Stock wrapper in order to reuse it later
+
+  // Create list items
+  updateFilterMenu(categoryName, items);
+  displayDropdownMenu(categoryWrapper, tagIcon, searchContainer, itemsList);
+  handleSearchInput(searchInput, itemList, clearIcon);
+  clearInputSearch(searchInput, clearIcon, itemList);
+}
+
+function updateFilterMenu(categoryName, items) {
+  const { categoryWrapper, itemList } = categoryWrappers[categoryName];
+  // Remove existing items to avoid repetition
+  while (itemList.firstChild) {
+    itemList.removeChild(itemList.firstChild);
+  }
+
+  // Add new items
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i];
     const listItem = document.createElement("div");
     listItem.classList.add("tag");
 
@@ -80,24 +112,21 @@ function createFilterMenu(categoryName, items) {
     title.textContent = item;
     listItem.appendChild(title);
 
-    // Tag click event
+    // Select tag
     listItem.addEventListener("click", function () {
       const isSelected = this.classList.toggle("selected");
       const category = determinedCategory(categoryName);
       const tagText = this.textContent;
       if (isSelected) {
         addTag(category, tagText);
-        createSelectedTagButton(tagText, itemList); // Create selected tag button
+        createSelectedTagButton(tagText, itemList);
       } else {
         removeTag(category, tagText);
       }
       filterAndRenderRecipes();
     });
     itemList.appendChild(listItem);
-  });
-  displayDropdownMenu(categoryWrapper, tagIcon, searchContainer, itemsList);
-  handleSearchInput(searchInput, itemList, clearIcon);
-  clearInputSearch(searchInput, clearIcon, itemList);
+  }
 }
 
 // Display dropdown menu
@@ -112,7 +141,7 @@ function displayDropdownMenu(
     tagIcon.classList.toggle("rotate-icon");
     if (!searchContainer.contains(e.target)) {
       itemsList.style.display =
-       itemsList.style.display === "none" ? "flex" : "none";
+        itemsList.style.display === "none" ? "flex" : "none";
     }
     const selectedTags = getSelectedTags();
     const categories = ["ingredients", "appliances", "ustensils"];
@@ -274,7 +303,9 @@ function createSelectedTagsListContainer(category, selectedTags, tagName) {
 
 // Remove selected tag in selected tags list and hover
 function removeSelectedTagInList(category, container, tagName) {
-  const selectedTagListItem = document.querySelectorAll(".selected-tag-list-item");
+  const selectedTagListItem = document.querySelectorAll(
+    ".selected-tag-list-item"
+  );
   selectedTagListItem.forEach((tagElement) => {
     if (tagElement.textContent.trim().split(" ")[0] === tagName) {
       tagElement.parentNode.removeChild(tagElement);
@@ -293,8 +324,12 @@ function removeSelectedTagInList(category, container, tagName) {
       filterAndRenderRecipes();
 
       // Remove related tag button
-      const selectedTagsContainer = document.querySelector(".selected-tags-container");
-      const selectedBtnTag = selectedTagsContainer.querySelectorAll(".selected-tag-button");
+      const selectedTagsContainer = document.querySelector(
+        ".selected-tags-container"
+      );
+      const selectedBtnTag = selectedTagsContainer.querySelectorAll(
+        ".selected-tag-button"
+      );
       selectedBtnTag.forEach((button) => {
         if (button.textContent === tagName) {
           selectedTagsContainer.removeChild(button);

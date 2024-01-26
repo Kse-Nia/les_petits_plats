@@ -10,6 +10,7 @@ import { getSelectedTags } from "./manageSelectedTags.js";
 // Global variables
 const recipesContainer = document.querySelector("#recipes");
 const folderPictures = "assets/photos/";
+let globalFilteredRecipes = []; // Global variable to store filtered recipes
 
 function createCardElements(recipe) {
   const card = document.createElement("div");
@@ -205,10 +206,20 @@ export function renderRecipes(filteredRecipes, searchInput) {
 
 export function filterAndRenderRecipes() {
   const searchValue = document.querySelector(".searchbar").value.trim();
-  const filteredRecipes = filterRecipes(searchValue, recipes);
-  renderRecipes(filteredRecipes, searchValue);
-  updateRecipesQuantity(filteredRecipes); // Update displayed recipes number
-}
+  globalFilteredRecipes = filterRecipes(searchValue, recipes);
+  renderRecipes(globalFilteredRecipes, searchValue);
+  updateRecipesQuantity(globalFilteredRecipes);
+
+  // Mise à jour des listes de filtres
+  const filteredIngredients = getIngredients(recipes, globalFilteredRecipes);
+  const filteredAppliances = getAppliances(recipes, globalFilteredRecipes);
+  const filteredUstensils = getUstensils(recipes, globalFilteredRecipes);
+
+  // Mise à jour des menus de filtres avec les nouvelles listes
+  createFilterMenu("Ingredients", filteredIngredients);
+  createFilterMenu("Appliances", filteredAppliances);
+  createFilterMenu("Ustensils", filteredUstensils);
+} 
 
 // Display number recipes
 function getRecipesQuantity() {
