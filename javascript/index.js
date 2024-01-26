@@ -138,7 +138,7 @@ function handleSearch(recipes) {
   }
 }
 
-function filterRecipes(searchInput, recipes) {
+function filterRecipes(searchInput = '', recipes = []) {
   const selectedTags = getSelectedTags(); // Get selected tags
 
   // Iterate over recipes and filter them
